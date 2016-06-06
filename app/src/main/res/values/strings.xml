@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Веселый Водовоз</string>
+    <string name="login_page">Авторизация</string>
+    <string name="login">Войти</string>
+    <string name="login_hint">Логин</string>
+    <string name="password_hint">Пароль</string>
+    <string name="authorization_in_progress">Авторизация&#8230;</string>
+    <string name="authorization_failed">Ошибка авторизации</string>
+</resources>
