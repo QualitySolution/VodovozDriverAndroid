@@ -1,9 +1,12 @@
 <resources>
-    <string name="app_name">Веселый Водовоз</string>
+    <string name="app_name">Водовоз</string>
     <string name="login_page">Авторизация</string>
     <string name="login">Войти</string>
     <string name="login_hint">Логин</string>
     <string name="password_hint">Пароль</string>
     <string name="authorization_in_progress">Авторизация&#8230;</string>
     <string name="authorization_failed">Ошибка авторизации</string>
+    <string name="orders_activity_title">Список заказов</string>
+
+    <string name="auth_file_key">ru.qsolution.vodovoz.driver.auth</string>
 </resources>
