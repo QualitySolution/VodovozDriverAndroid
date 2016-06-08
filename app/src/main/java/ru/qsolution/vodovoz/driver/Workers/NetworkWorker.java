@@ -1,4 +1,4 @@
-package ru.qsolution.vodovoz.driver;
+package ru.qsolution.vodovoz.driver.Workers;
 
 import org.ksoap2.SoapEnvelope;
 import org.ksoap2.serialization.SoapObject;
@@ -12,6 +12,7 @@ public class NetworkWorker {
 
     public static final String Namespace = "http://tempuri.org/";
     public static final String ServiceUrl = "http://saas.qsolution.ru:9000/AndroidDriverService";
+    //public static final String ServiceUrl = "http://vinogradov.sknt.ru:9000/AndroidDriverService";
 
     public static SoapSerializationEnvelope CreateEnvelope (SoapObject soapObject) {
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);

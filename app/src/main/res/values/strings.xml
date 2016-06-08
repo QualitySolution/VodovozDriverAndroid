@@ -7,6 +7,7 @@
     <string name="authorization_in_progress">Авторизация&#8230;</string>
     <string name="authorization_failed">Ошибка авторизации</string>
     <string name="orders_activity_title">Список заказов</string>
+    <string name="route_lists_activity_title">Список маршрутных листов</string>
 
     <string name="auth_file_key">ru.qsolution.vodovoz.driver.auth</string>
 </resources>

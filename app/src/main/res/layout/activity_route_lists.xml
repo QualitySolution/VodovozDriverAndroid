@@ -9,4 +9,14 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.qsolution.vodovoz.driver.RouteListsActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/route_lists_activity_title"
+        android:textColor="@color/colorPrimaryDark"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
