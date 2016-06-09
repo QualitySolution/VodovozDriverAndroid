@@ -60,7 +60,7 @@ public class Order {
         OrderComment = SoapWorker.SafeGetPropertyAsString(soapObject, "OrderComment");
         Counterparty = SoapWorker.SafeGetPropertyAsString(soapObject, "Counterparty");
         RouteListItemStatus = "FIX ME";
-        Latitude = Float.parseFloat(SoapWorker.SafeGetPropertyAsString(soapObject, "CityDistrict"));
-        Longitude = Float.parseFloat(SoapWorker.SafeGetPropertyAsString(soapObject, "CityDistrict"));
+        Latitude = Float.parseFloat(SoapWorker.SafeGetPropertyAsString(soapObject, "Latitude"));
+        Longitude = Float.parseFloat(SoapWorker.SafeGetPropertyAsString(soapObject, "Longitude"));
     }
 }
