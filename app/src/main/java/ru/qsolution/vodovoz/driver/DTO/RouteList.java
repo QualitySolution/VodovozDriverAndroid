@@ -11,14 +11,21 @@ import java.util.Date;
  */
 public class RouteList {
     public String Id;
-    public String Status;
+    private String status;
     public String Forwarder;
     public String DeliveryShift;
     public Date Date;
 
+    public String Status() {
+        switch (status) {
+            case "EnRoute" : return "В пути";
+            default: return "Неизвестный статус";
+        }
+    }
+
     public RouteList (SoapObject soapObject) {
         Id = soapObject.getProperty("Id").toString();
-        Status = soapObject.getProperty("Status").toString();
+        status = soapObject.getProperty("Status").toString();
         Forwarder = soapObject.getProperty("Forwarder").toString();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         try {

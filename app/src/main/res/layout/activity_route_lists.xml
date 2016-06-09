@@ -10,13 +10,22 @@
     tools:context="ru.qsolution.vodovoz.driver.RouteListsActivity">
 
     <TextView
+        android:id="@+id/pageTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/route_lists_activity_title"
-        android:textColor="@color/colorPrimaryDark"
-        android:id="@+id/textView"
-        android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/route_lists_activity_title"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/colorPrimaryDark" />
+
+    <ListView
+        android:id="@+id/routeListsListView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pageTitleTextView"
+        android:layout_marginTop="10dp">
+
+    </ListView>
 </RelativeLayout>

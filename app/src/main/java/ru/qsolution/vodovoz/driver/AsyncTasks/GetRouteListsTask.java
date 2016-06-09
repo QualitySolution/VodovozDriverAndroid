@@ -9,15 +9,17 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
+import ru.qsolution.vodovoz.driver.DTO.RouteList;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
 /**
  * Created by Andrei on 07.06.16.
  */
-public class GetRouteListsTask extends AsyncTask<String, Void, Object> {
+public class GetRouteListsTask extends AsyncTask<String, Void, ArrayList<RouteList>> {
     @Override
-    protected Object doInBackground(String... args) {
+    protected ArrayList<RouteList> doInBackground(String... args) {
 
         String METHOD_NAME = "GetRouteLists";
 
@@ -35,7 +37,26 @@ public class GetRouteListsTask extends AsyncTask<String, Void, Object> {
             e.printStackTrace();
         }
         try {
-            return envelope.getResponse();
+            Object routeListsObj = envelope.getResponse();
+            ArrayList<RouteList> result = null;
+
+            if (routeListsObj instanceof SoapObject) {
+                SoapObject routeLists = (SoapObject) routeListsObj;
+
+                if (routeLists.getPropertyCount() == 0)
+                    return null;
+
+                result = new ArrayList<>();
+                for (int i = 0; i < routeLists.getPropertyCount(); i++) {
+                    Object property = routeLists.getProperty(i);
+                    if (property instanceof SoapObject) {
+                        SoapObject soapObject = (SoapObject) property;
+                        RouteList routeList = new RouteList(soapObject);
+                        result.add(routeList);
+                    }
+                }
+            }
+            return result;
         } catch (SoapFault e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
