@@ -1,6 +1,7 @@
 package ru.qsolution.vodovoz.driver;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -48,7 +49,10 @@ public class RouteListsActivity extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 RouteList routeList = adapter.getItem(position);
-                //TODO: Open OrdersActivity for that route list.
+                Intent intent = new Intent(RouteListsActivity.this, OrdersActivity.class);
+                intent.putExtra("RouteListId", routeList.Id);
+                startActivity(intent);
+                //finish();
             }
         });
 
