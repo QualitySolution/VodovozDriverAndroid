@@ -13,8 +13,13 @@ public class SoapWorker {
             Object property = soapObject.getProperty(propertyName);
             if (property == null)
                 return EMPTY_STRING;
-            else
-                return property.toString();
+            else {
+                String result = property.toString();
+                if (result.equals("anyType{}"))
+                    return EMPTY_STRING;
+                return result;
+            }
+
         } catch (RuntimeException e) {
             return EMPTY_STRING;
         }

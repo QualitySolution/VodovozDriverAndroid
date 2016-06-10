@@ -1,6 +1,7 @@
 package ru.qsolution.vodovoz.driver;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,24 +34,21 @@ public class OrdersActivity extends AppCompatActivity {
         if (extras != null) {
             try {
                 ordersList = new GetOrdersTask().execute(sharedPref.getString("Authkey", ""), extras.getString("RouteListId")).get();
-                //TODO: Show error if null
-                adapter = new OrdersAdapter(this, ordersList);
-
-                list.setAdapter(adapter);
+                if (ordersList != null) {
+                    adapter = new OrdersAdapter(this, ordersList);
+                    list.setAdapter(adapter);
+                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            ShortOrder order = adapter.getItem(position);
+                            Intent intent = new Intent(OrdersActivity.this, OrderDetailedActivity.class);
+                            intent.putExtra("OrderId", order.Id);
+                            startActivity(intent);
+                        }
+                    });
+                }
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
-
-            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    ShortOrder order = adapter.getItem(position);
-                    //Intent intent = new Intent(OrdersActivity.this, OrdersActivity.class);
-                    //intent.putExtra("RouteListId", routeList.Id);
-                    //startActivity(intent);
-                    //finish();
-                }
-            });
         }
-
     }
 }

@@ -52,7 +52,6 @@ public class RouteListsActivity extends AppCompatActivity {
                 Intent intent = new Intent(RouteListsActivity.this, OrdersActivity.class);
                 intent.putExtra("RouteListId", routeList.Id);
                 startActivity(intent);
-                //finish();
             }
         });
 
