@@ -7,8 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="ru.qsolution.vodovoz.driver.OrderDetailedActivity">
-
+    tools:context="ru.qsolution.vodovoz.driver.OrderInfoFragmentActivity">
     <TextView
         android:id="@+id/orderNumber"
         android:layout_width="match_parent"
@@ -35,6 +34,8 @@
         android:layout_below="@+id/orderClient"
         android:layout_centerVertical="true"
         android:text="%Client Address%"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
 
@@ -67,49 +68,4 @@
         android:layout_below="@+id/orderStatus"
         android:text="@string/get_route"
         android:enabled="false"/>
-
-    <View
-        android:id="@+id/separator"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_below="@id/buttonGetRoute"/>
-    <TextView
-        android:id="@+id/orderContactTitle"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_below="@+id/separator"
-        android:text="@string/contacts"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <TextView
-        android:id="@+id/orderContactPerson"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/orderContactTitle"
-        android:text="%Contact person%"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <TextView
-        android:id="@+id/orderContactPhone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/orderContactPerson"
-        android:text="%Contact phone%"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <Button
-        android:id="@+id/buttonCall"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/orderContactPhone"
-        android:text="@string/call"
-        android:enabled="false"/>
-
-
 </RelativeLayout>

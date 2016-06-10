@@ -2,6 +2,7 @@ package ru.qsolution.vodovoz.driver.DTO;
 
 import org.ksoap2.serialization.SoapObject;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import ru.qsolution.vodovoz.driver.Workers.SoapWorker;
 /**
  * Created by Andrei on 08.06.16.
  */
-public class Order {
+public class Order implements Serializable {
     public String Id;
     public String Title;
     public String Region;                   //FIXME: Not used

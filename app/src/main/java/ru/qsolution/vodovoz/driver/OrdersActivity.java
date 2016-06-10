@@ -40,7 +40,7 @@ public class OrdersActivity extends AppCompatActivity {
                     list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             ShortOrder order = adapter.getItem(position);
-                            Intent intent = new Intent(OrdersActivity.this, OrderDetailedActivity.class);
+                            Intent intent = new Intent(OrdersActivity.this, TabbedOrderDetailedActivity.class);
                             intent.putExtra("OrderId", order.Id);
                             startActivity(intent);
                         }

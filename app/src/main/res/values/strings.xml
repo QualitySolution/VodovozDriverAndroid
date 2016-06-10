@@ -10,7 +10,7 @@
 
     <string name="route_lists_activity_title">Список маршрутных листов</string>
     <string name="get_route">Построить маршрут</string>
-    <string name="contacts">Контакты</string>
+    <string name="delivery_point">Точка доставки</string>
     <string name="call">Позвонить</string>
 
     <string name="auth_file_key">ru.qsolution.vodovoz.driver.auth</string>
