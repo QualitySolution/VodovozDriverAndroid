@@ -20,7 +20,6 @@ public class Order implements Serializable {
     public String DeliveryPointComment;     //TODO: Not used
     public String Contact;
     public String Phone;
-    public ArrayList<String> Phones;
     public String DeliverySchedule;
     public String OrderStatus;
     public String RouteListItemStatus;      //TODO: Not used
@@ -29,6 +28,9 @@ public class Order implements Serializable {
     public String Address;
     public Float Latitude;
     public Float Longitude;
+    public ArrayList<String> Phones;
+    public ArrayList<String> OrderItems;
+    public ArrayList<String> OrderEquipment;
 
     public Order (SoapObject soapObject) {
         Id = SoapWorker.SafeGetPropertyAsString(soapObject, "Id");
@@ -52,6 +54,20 @@ public class Order implements Serializable {
                 Phones.add(phones.getProperty(i).toString());
             }
         }
+        OrderItems = new ArrayList<>();
+        if (soapObject.getProperty("OrderItems") instanceof SoapObject) {
+            SoapObject items = (SoapObject)soapObject.getProperty("OrderItems");
+            for (int i = 0; i < items.getPropertyCount(); i++) {
+                OrderItems.add(items.getProperty(i).toString());
+            }
+        }
+        OrderEquipment = new ArrayList<>();
+        if (soapObject.getProperty("OrderEquipment") instanceof SoapObject) {
+            SoapObject equipment = (SoapObject)soapObject.getProperty("OrderEquipment");
+            for (int i = 0; i < equipment.getPropertyCount(); i++) {
+                OrderEquipment.add(equipment.getProperty(i).toString());
+            }
+        }
         try {
             Latitude = Float.parseFloat(SoapWorker.SafeGetPropertyAsString(soapObject, "Latitude"));
             Longitude = Float.parseFloat(SoapWorker.SafeGetPropertyAsString(soapObject, "Longitude"));
@@ -60,9 +76,9 @@ public class Order implements Serializable {
         }
     }
 
-    public String GetPhoneNumberUri() {
-        if (Phone != null && !Phone.equals("")) {
-            return "tel: +7" + Phone.replaceAll("[^\\d]", "");
+    public static String GetPhoneNumberUri(String phone) {
+        if (phone != null && !phone.equals("")) {
+            return "tel: +7" + phone.replaceAll("[^\\d]", "");
         }
         return null;
     }

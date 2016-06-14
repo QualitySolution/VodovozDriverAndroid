@@ -1,9 +1,12 @@
 package ru.qsolution.vodovoz.driver;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -14,8 +17,11 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 import java.util.concurrent.ExecutionException;
 import ru.qsolution.vodovoz.driver.AsyncTasks.*;
+import ru.qsolution.vodovoz.driver.Services.LocationService;
 
 public class LoginActivity extends AppCompatActivity {
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 42;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 24;
 
     EditText usernameInput;
     EditText passwordInput;
@@ -25,6 +31,13 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            if (extras.getBoolean("EXIT", false)) {
+                finish();
+                return;
+            }
+        }
         //Checking authorization
         Context context = this.getApplicationContext();
         SharedPreferences sharedPref = context.getSharedPreferences(
@@ -34,6 +47,19 @@ public class LoginActivity extends AppCompatActivity {
                 Boolean authOk = new CheckAuthTask().execute(sharedPref.getString("Authkey", "")).get();
                 //If already authorized - open route lists activity
                 if (authOk != null && authOk) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+
+                    }
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this,
+                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                                MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+
+                    }
+
                     Intent i = new Intent(this, RouteListsActivity.class);
                     startActivity(i);
                     finish();

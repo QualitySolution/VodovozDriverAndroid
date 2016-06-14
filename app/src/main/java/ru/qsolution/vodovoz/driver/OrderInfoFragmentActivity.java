@@ -3,6 +3,7 @@ package ru.qsolution.vodovoz.driver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Color;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
@@ -63,6 +64,9 @@ public class OrderInfoFragmentActivity extends Fragment {
             orderAddress.setText(order.Address);
             orderStatus.setText(order.OrderStatus);
             orderDeliveryTime.setText(order.DeliverySchedule);
+
+            if (order.OrderStatus.equals("В пути"))
+                orderStatus.setTextColor(Color.parseColor("#36b032"));
 
             if (order.Latitude != null && order.Longitude != null) {
                 getRoute.setEnabled(true);

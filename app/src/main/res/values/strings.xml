@@ -11,7 +11,15 @@
     <string name="route_lists_activity_title">Список маршрутных листов</string>
     <string name="get_route">Построить маршрут</string>
     <string name="delivery_point">Точка доставки</string>
+    <string name="other_contacts">Телефоны компании</string>
     <string name="call">Позвонить</string>
+    <string name="order_items">Товары</string>
+    <string name="order_equipment">Оборудование</string>
+
+    <string name="menu_item_shutdown">Завершение работы</string>
+    <string name="menu_item_close">Выход</string>
+    <string name="menu_item_logout">Смена пользователя</string>
+    <string name="menu_item_start_route_list">Принять</string>
 
     <string name="auth_file_key">ru.qsolution.vodovoz.driver.auth</string>
 </resources>

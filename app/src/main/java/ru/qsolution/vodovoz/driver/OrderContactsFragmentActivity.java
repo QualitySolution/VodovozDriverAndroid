@@ -8,8 +8,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import ru.qsolution.vodovoz.driver.DTO.Order;
 
@@ -19,7 +23,7 @@ public class OrderContactsFragmentActivity extends Fragment {
 
     private TextView orderContactPerson;
     private TextView orderContactPhone;
-    private Button callContactPerson;
+    private ListView contactsListView;
 
     private Order order;
 
@@ -44,17 +48,32 @@ public class OrderContactsFragmentActivity extends Fragment {
         if (order != null) {
             orderContactPerson = (TextView) rootView.findViewById(R.id.orderContactPerson);
             orderContactPhone = (TextView) rootView.findViewById(R.id.orderContactPhone);
-            callContactPerson = (Button) rootView.findViewById(R.id.buttonCall);
+            contactsListView = (ListView) rootView.findViewById(R.id.contactsListView);
 
             orderContactPerson.setText(order.Contact);
             orderContactPhone.setText(order.Phone);
 
-            if (order.GetPhoneNumberUri() != null) {
-                callContactPerson.setEnabled(true);
-                callContactPerson.setOnClickListener(new View.OnClickListener() {
+            if (order.Phones.size() > 0) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(rootView.getContext(), android.R.layout.simple_list_item_1, order.Phones.toArray(new String[order.Phones.size()]));
+                contactsListView.setAdapter(adapter);
+                contactsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View itemClicked, int position, long id) {
+                        String phoneNumber = (String)parent.getItemAtPosition(position);
+                        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(Order.GetPhoneNumberUri(phoneNumber)));
+                        startActivity(intent);
+                    }
+                });
+            } else {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(rootView.getContext(), android.R.layout.simple_list_item_1, new String[] {"Номера телефонов не указаны"});
+                contactsListView.setAdapter(adapter);
+            }
+
+            if (Order.GetPhoneNumberUri(order.Phone) != null) {
+                orderContactPhone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(order.GetPhoneNumberUri()));
+                        Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(Order.GetPhoneNumberUri(order.Phone)));
                         startActivity(intent);
                     }
                 });
