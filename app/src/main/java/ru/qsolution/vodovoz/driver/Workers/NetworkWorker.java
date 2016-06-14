@@ -18,10 +18,10 @@ public class NetworkWorker {
     public static SoapSerializationEnvelope CreateEnvelope (SoapObject soapObject) {
         SoapSerializationEnvelope envelope = new SoapSerializationEnvelope(SoapEnvelope.VER11);
         envelope.dotNet = true;
-        envelope.setAddAdornments(false);
+        //envelope.setAddAdornments(false);
         envelope.encodingStyle = SoapSerializationEnvelope.ENC;
         envelope.env=SoapSerializationEnvelope.ENV;
-        envelope.implicitTypes = true;
+        //envelope.implicitTypes = false;
         envelope.setOutputSoapObject(soapObject);
 
         return envelope;

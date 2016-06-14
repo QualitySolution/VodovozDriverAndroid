@@ -14,11 +14,17 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+
 import ru.qsolution.vodovoz.driver.AsyncTasks.SendCoordinatesTask;
+import ru.qsolution.vodovoz.driver.DTO.TrackPoint;
 
 public class LocationService extends Service {
-    private LocationManager locationManager;
     public static String RouteListId;
+
+    private LocationManager locationManager;
+    private ArrayList<TrackPoint> trackPoints = new ArrayList<>();
 
     private LocationListener locationListener = new LocationListener() {
         @Override
@@ -27,10 +33,18 @@ public class LocationService extends Service {
             Double longitude = location.getLongitude();
             Float accuracy = location.getAccuracy();
             Long time = location.getTime();
-            location.getTime();
+            trackPoints.add(new TrackPoint(latitude, longitude, time));
             Log.i("Location", "\nlat: " + latitude.toString() + "; lon: " + longitude.toString() + "; acc: " + accuracy.toString() + "; time: " + time.toString());
             //FIXME: Auth key
-            new SendCoordinatesTask().execute("authKey", latitude.toString(), longitude.toString());
+            if (trackPoints.size() > 2) {
+                try {
+                    if (new SendCoordinatesTask().execute("authKey", trackPoints).get()) {
+                        trackPoints = new ArrayList<>();
+                    }
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         @Override
