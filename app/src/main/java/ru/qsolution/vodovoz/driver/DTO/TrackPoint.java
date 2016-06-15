@@ -3,8 +3,6 @@ package ru.qsolution.vodovoz.driver.DTO;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
-import java.io.Serializable;
-import java.sql.Time;
 import java.util.Hashtable;
 
 /**

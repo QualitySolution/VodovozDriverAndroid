@@ -19,49 +19,34 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 /**
  * Created by Andrei on 07.06.16.
  */
-public class SendCoordinatesTask extends AsyncTask<Object, Void, Boolean> {
+public class StartTrackTask extends AsyncTask<String, Void, Integer> {
     @Override
-    protected Boolean doInBackground(Object... args) {
+    protected Integer doInBackground(String... args) {
 
-        String METHOD_NAME = "SendCoordinates";
-
+        String METHOD_NAME = "StartOrResumeTrack";
+        Integer result = null;
         HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
 
         SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("authKey", args[0].toString());
-        request.addProperty("trackId", args[1].toString());
-
-        List<TrackPoint> list = (List<TrackPoint>)args[2];
-        SoapObject soapDetails = new SoapObject(NetworkWorker.Namespace, "TrackPointList");
-
-        for (int i=0;i<list.size();i++){
-            PropertyInfo inf = new PropertyInfo();
-            inf.setName("TrackPoint");
-            inf.setValue(list.get(i));
-            inf.setType(list.get(i).getClass());
-            soapDetails.addProperty(inf);
-        }
-
-        request.addSoapObject(soapDetails);
+        request.addProperty("authKey", args[0]);
+        request.addProperty("routeListId", args[1]);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
-        envelope.addMapping(NetworkWorker.Namespace, "TrackPoint", list.get(0).getClass());
-        envelope.addMapping(NetworkWorker.Namespace, "TrackPointList", list.getClass());
 
         try {
             httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope);
         } catch (IOException | XmlPullParserException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return false;
+            return null;
         }
         try {
             SoapPrimitive response = (SoapPrimitive)envelope.getResponse();
-            return Boolean.parseBoolean(response.getValue().toString());
+            result = Integer.parseInt(response.getValue().toString());
         } catch (SoapFault e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
-            return false;
         }
+        return result;
     }
 }

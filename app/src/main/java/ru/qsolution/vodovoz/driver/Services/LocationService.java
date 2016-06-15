@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -18,27 +19,29 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import ru.qsolution.vodovoz.driver.AsyncTasks.SendCoordinatesTask;
+import ru.qsolution.vodovoz.driver.AsyncTasks.StartTrackTask;
 import ru.qsolution.vodovoz.driver.DTO.TrackPoint;
+import ru.qsolution.vodovoz.driver.R;
 
 public class LocationService extends Service {
     public static String RouteListId;
 
     private LocationManager locationManager;
     private ArrayList<TrackPoint> trackPoints = new ArrayList<>();
+    private Integer trackId;
+    private String authKey;
 
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
             Double latitude = location.getLatitude();
             Double longitude = location.getLongitude();
-            Float accuracy = location.getAccuracy();
             Long time = location.getTime();
             trackPoints.add(new TrackPoint(latitude, longitude, time));
-            Log.i("Location", "\nlat: " + latitude.toString() + "; lon: " + longitude.toString() + "; acc: " + accuracy.toString() + "; time: " + time.toString());
-            //FIXME: Auth key
-            if (trackPoints.size() > 2) {
+            Log.i("Location", "\nlat: " + latitude.toString() + "; lon: " + longitude.toString() + "; time: " + time.toString());
+            if (trackPoints.size() > 0) {
                 try {
-                    if (new SendCoordinatesTask().execute("authKey", trackPoints).get()) {
+                    if (new SendCoordinatesTask().execute(authKey, trackId, trackPoints).get()) {
                         trackPoints = new ArrayList<>();
                     }
                 } catch (InterruptedException | ExecutionException e) {
@@ -78,9 +81,19 @@ public class LocationService extends Service {
         }
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            LocationService.RouteListId = extras.getString("routeListId");
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 3, locationListener);
-            Log.i("Location", "requesting location updates for route list #" + LocationService.RouteListId);
+            RouteListId = extras.getString("routeListId");
+            Context context = this.getApplicationContext();
+            SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+            authKey = sharedPref.getString("Authkey", "");
+            try {
+                trackId = new StartTrackTask().execute(authKey, RouteListId).get();
+                if (trackId != null) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, locationListener);
+                    Log.i("Location", "requesting location updates for route list #" + RouteListId);
+                }
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
         return super.onStartCommand(intent, flags, startId);
     }
@@ -89,7 +102,7 @@ public class LocationService extends Service {
     public void onDestroy()
     {
         locationManager.removeUpdates(locationListener);
-        Log.i("Location", "stopping location updates for route list #" + LocationService.RouteListId);
+        Log.i("Location", "stopping location updates for route list #" + RouteListId);
         super.onDestroy();
     }
 }
