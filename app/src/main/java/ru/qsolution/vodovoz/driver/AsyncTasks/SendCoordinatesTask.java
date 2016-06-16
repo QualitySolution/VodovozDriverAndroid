@@ -2,7 +2,6 @@ package ru.qsolution.vodovoz.driver.AsyncTasks;
 
 import android.os.AsyncTask;
 
-import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.PropertyInfo;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
@@ -17,12 +16,14 @@ import ru.qsolution.vodovoz.driver.DTO.TrackPoint;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
 /**
- * Created by Andrei on 07.06.16.
+ * Created by Andrei Vinogradov on 07.06.16.
+ * (c) Quality Solution Ltd.
  */
-public class SendCoordinatesTask extends AsyncTask<Object, Void, Boolean> {
-    @Override
-    protected Boolean doInBackground(Object... args) {
 
+public class SendCoordinatesTask extends AsyncTask<Object, Void, AsyncTaskResult<Boolean>> {
+    @Override
+    protected AsyncTaskResult<Boolean> doInBackground(Object... args) {
+        AsyncTaskResult<Boolean> result;
         String METHOD_NAME = "SendCoordinates";
 
         HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
@@ -31,10 +32,10 @@ public class SendCoordinatesTask extends AsyncTask<Object, Void, Boolean> {
         request.addProperty("authKey", args[0].toString());
         request.addProperty("trackId", args[1].toString());
 
-        List<TrackPoint> list = (List<TrackPoint>)args[2];
+        List<TrackPoint> list = (List<TrackPoint>) args[2];
         SoapObject soapDetails = new SoapObject(NetworkWorker.Namespace, "TrackPointList");
 
-        for (int i=0;i<list.size();i++){
+        for (int i = 0; i < list.size(); i++) {
             PropertyInfo inf = new PropertyInfo();
             inf.setName("TrackPoint");
             inf.setValue(list.get(i));
@@ -50,18 +51,11 @@ public class SendCoordinatesTask extends AsyncTask<Object, Void, Boolean> {
 
         try {
             httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope);
-        } catch (IOException | XmlPullParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
+            SoapPrimitive response = (SoapPrimitive) envelope.getResponse();
+            result = new AsyncTaskResult<>(Boolean.parseBoolean(response.getValue().toString()));
+        } catch (XmlPullParserException | IOException e) {
+            result = new AsyncTaskResult<>(e);
         }
-        try {
-            SoapPrimitive response = (SoapPrimitive)envelope.getResponse();
-            return Boolean.parseBoolean(response.getValue().toString());
-        } catch (SoapFault e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            return false;
-        }
+        return result;
     }
 }

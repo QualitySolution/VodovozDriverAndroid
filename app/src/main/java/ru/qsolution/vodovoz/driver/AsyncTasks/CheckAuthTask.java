@@ -2,7 +2,6 @@ package ru.qsolution.vodovoz.driver.AsyncTasks;
 
 import android.os.AsyncTask;
 
-import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -14,12 +13,14 @@ import java.io.IOException;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
 /**
- * Created by Andrei on 07.06.16.
+ * Created by Andrei Vinogradov on 07.06.16.
+ * (c) Quality Solution Ltd.
  */
-public class CheckAuthTask extends AsyncTask<String, Void, Boolean> {
-    @Override
-    protected Boolean doInBackground(String... args) {
 
+public class CheckAuthTask extends AsyncTask<String, Void, AsyncTaskResult<Boolean>> {
+    @Override
+    protected AsyncTaskResult<Boolean> doInBackground(String... args) {
+        AsyncTaskResult<Boolean> result;
         String METHOD_NAME = "CheckAuth";
 
         HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
@@ -31,21 +32,11 @@ public class CheckAuthTask extends AsyncTask<String, Void, Boolean> {
 
         try {
             httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope);
-        } catch (IOException | XmlPullParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            SoapPrimitive response = (SoapPrimitive) envelope.getResponse();
+            result = new AsyncTaskResult<>(Boolean.parseBoolean(response.getValue().toString()));
+        } catch (XmlPullParserException | IOException e) {
+            result = new AsyncTaskResult<>(e);
         }
-        try {
-            SoapPrimitive response = (SoapPrimitive)envelope.getResponse();
-            Boolean boolResponse = Boolean.parseBoolean(response.getValue().toString());
-
-            return boolResponse;
-        } catch (SoapFault e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return result;
     }
 }

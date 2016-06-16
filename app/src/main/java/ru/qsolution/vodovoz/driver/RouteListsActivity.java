@@ -9,71 +9,66 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import org.ksoap2.serialization.SoapObject;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import ru.qsolution.vodovoz.driver.ArrayAdapters.RouteListAdapter;
-import ru.qsolution.vodovoz.driver.AsyncTasks.CheckAuthTask;
+import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetRouteListsTask;
 import ru.qsolution.vodovoz.driver.DTO.RouteList;
-import ru.qsolution.vodovoz.driver.Services.LocationService;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
 public class RouteListsActivity extends AppCompatActivity {
-
-    private ArrayList<RouteList> routeLists;
-    private ListView list;
     private RouteListAdapter adapter;
-
-    private Context context;
     private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_lists);
-        list = (ListView) findViewById(R.id.routeListsListView);
-        context = this.getApplicationContext();
+        ListView list = (ListView) findViewById(R.id.routeListsListView);
+        Context context = this.getApplicationContext();
         sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
 
         try {
-            routeLists = new GetRouteListsTask().execute(sharedPref.getString("Authkey", "")).get();
-            adapter = new RouteListAdapter(this, routeLists);
-
-            list.setAdapter(adapter);
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                RouteList routeList = adapter.getItem(position);
-                Intent intent = new Intent(RouteListsActivity.this, OrdersActivity.class);
-                intent.putExtra("RouteListId", routeList.Id);
-                startActivity(intent);
+            AsyncTaskResult<ArrayList<RouteList>> result = new GetRouteListsTask().execute(sharedPref.getString("Authkey", "")).get();
+            if (result.getException() == null && result.getResult() != null && result.getResult().size() > 0) {
+                adapter = new RouteListAdapter(this, result.getResult());
+                list.setAdapter(adapter);
+                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        RouteList routeList = adapter.getItem(position);
+                        Intent intent = new Intent(RouteListsActivity.this, OrdersActivity.class);
+                        intent.putExtra("RouteListId", routeList.Id);
+                        startActivity(intent);
+                    }
+                });
+            } else if (result.getException() == null && (result.getResult() == null || result.getResult().size() == 0)) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{"Маршрутные листы отсутствуют"});
+                list.setAdapter(adapter);
+            } else {
+                Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                toast.show();
+                throw result.getException();
             }
-        });
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG)
+                e.printStackTrace();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate your main_menu into the menu
         getMenuInflater().inflate(R.menu.route_lists_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
-        if (item.getItemId() == R.id.taskChangeUserBtn)
-        {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.taskChangeUserBtn) {
             ServiceWorker.StopLocationService(this);
 
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -99,12 +94,5 @@ public class RouteListsActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onResume() {
-        adapter = new RouteListAdapter(this, routeLists);
-        list.setAdapter(adapter);
-        super.onResume();
     }
 }

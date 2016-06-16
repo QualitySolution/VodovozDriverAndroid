@@ -10,22 +10,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import ru.qsolution.vodovoz.driver.ArrayAdapters.OrdersAdapter;
+import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrdersTask;
 import ru.qsolution.vodovoz.driver.DTO.ShortOrder;
 import ru.qsolution.vodovoz.driver.Services.LocationService;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
 public class OrdersActivity extends AppCompatActivity {
-    private ArrayList<ShortOrder> ordersList;
-    private ListView list;
     private OrdersAdapter adapter;
-    private Context context;
     private SharedPreferences sharedPref;
     private String routeListId;
 
@@ -33,18 +32,19 @@ public class OrdersActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
-        list = (ListView) findViewById(R.id.ordersListView);
 
-        context = this.getApplicationContext();
-        sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+        Context context = this.getApplicationContext();
+        ListView list = (ListView) findViewById(R.id.ordersListView);
         Bundle extras = getIntent().getExtras();
+        sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
 
         if (extras != null) {
             try {
                 routeListId = extras.getString("RouteListId");
-                ordersList = new GetOrdersTask().execute(sharedPref.getString("Authkey", ""), routeListId).get();
-                if (ordersList != null) {
-                    adapter = new OrdersAdapter(this, ordersList);
+                AsyncTaskResult<ArrayList<ShortOrder>> result = new GetOrdersTask().execute(sharedPref.getString("Authkey", ""), routeListId).get();
+
+                if (result.getException() == null && result.getResult() != null && result.getResult().size() > 0) {
+                    adapter = new OrdersAdapter(this, result.getResult());
                     list.setAdapter(adapter);
                     list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -54,18 +54,24 @@ public class OrdersActivity extends AppCompatActivity {
                             startActivity(intent);
                         }
                     });
+                } else if (result.getException() == null && (result.getResult() == null || result.getResult().size() == 0)) {
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{"Заказы отсутствуют"});
+                    list.setAdapter(adapter);
+                } else {
+                    Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                    toast.show();
+                    throw result.getException();
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
             }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate your main_menu into the menu
         getMenuInflater().inflate(R.menu.orders_list_menu, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 

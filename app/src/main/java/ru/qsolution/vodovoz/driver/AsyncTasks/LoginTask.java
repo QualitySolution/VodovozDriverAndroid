@@ -2,7 +2,6 @@ package ru.qsolution.vodovoz.driver.AsyncTasks;
 
 import android.os.AsyncTask;
 
-import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
@@ -13,12 +12,14 @@ import java.io.IOException;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
 /**
- * Created by Andrei on 07.06.16.
+ * Created by Andrei Vinogradov on 07.06.16.
+ * (c) Quality Solution Ltd.
  */
-public class LoginTask extends AsyncTask<String, Void, Object> {
-    @Override
-    protected Object doInBackground(String... args) {
 
+public class LoginTask extends AsyncTask<String, Void, AsyncTaskResult<String>> {
+    @Override
+    protected AsyncTaskResult<String> doInBackground(String... args) {
+        AsyncTaskResult<String> result;
         String METHOD_NAME = "Auth";
 
         HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
@@ -31,16 +32,10 @@ public class LoginTask extends AsyncTask<String, Void, Object> {
 
         try {
             httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope);
-        } catch (IOException | XmlPullParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            result = new AsyncTaskResult<>((String)envelope.getResponse());
+        } catch (XmlPullParserException | IOException e) {
+            result = new AsyncTaskResult<>(e);
         }
-        try {
-            return envelope.getResponse();
-        } catch (SoapFault e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return null;
+        return result;
     }
 }

@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -14,26 +12,19 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 
-import android.widget.TextView;
+import android.widget.Toast;
 
-import java.util.concurrent.ExecutionException;
-
+import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrderDetailedTask;
 import ru.qsolution.vodovoz.driver.DTO.Order;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
 public class TabbedOrderDetailedActivity extends AppCompatActivity {
-
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
     private SharedPreferences sharedPref;
-    private Order order;
+    private AsyncTaskResult<Order> result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +35,10 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -58,11 +49,17 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity {
         Bundle extras = getIntent().getExtras();
 
         try {
-            order = new GetOrderDetailedTask()
-                    .execute(sharedPref.getString("Authkey", ""), extras.getString("OrderId")).get();
-
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            result = new GetOrderDetailedTask().execute(sharedPref.getString("Authkey", ""), extras.getString("OrderId")).get();
+            if ((result.getException() == null && result.getResult() == null) || result.getException() != null) {
+                finish();
+                Toast toast = Toast.makeText(this, "Не удалось загрузить заказ.", Toast.LENGTH_LONG);
+                toast.show();
+                if (result.getException() != null)
+                    throw result.getException();
+            }
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG)
+                e.printStackTrace();
         }
     }
 
@@ -76,11 +73,11 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return OrderInfoFragmentActivity.newInstance(position, order);
+                    return OrderInfoFragmentActivity.newInstance(position, result.getResult());
                 case 1:
-                    return OrderContactsFragmentActivity.newInstance(position, order);
+                    return OrderContactsFragmentActivity.newInstance(position, result.getResult());
                 default:
-                    return OrderItemsFragmentActivity.newInstance(position, order);
+                    return OrderItemsFragmentActivity.newInstance(position, result.getResult());
             }
         }
 
@@ -111,9 +108,8 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected (MenuItem item) {
-        if (item.getItemId() == R.id.taskChangeUserBtn)
-        {
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.taskChangeUserBtn) {
             ServiceWorker.StopLocationService(this);
 
             SharedPreferences.Editor editor = sharedPref.edit();

@@ -2,7 +2,6 @@ package ru.qsolution.vodovoz.driver.AsyncTasks;
 
 import android.os.AsyncTask;
 
-import org.ksoap2.SoapFault;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
@@ -15,15 +14,17 @@ import ru.qsolution.vodovoz.driver.DTO.RouteList;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
 /**
- * Created by Andrei on 07.06.16.
+ * Created by Andrei Vinogradov on 07.06.16.
+ * (c) Quality Solution Ltd.
  */
-public class GetRouteListsTask extends AsyncTask<String, Void, ArrayList<RouteList>> {
-    @Override
-    protected ArrayList<RouteList> doInBackground(String... args) {
 
+public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<ArrayList<RouteList>>> {
+    @Override
+    protected AsyncTaskResult<ArrayList<RouteList>> doInBackground(String... args) {
+        AsyncTaskResult<ArrayList<RouteList>> result;
         String METHOD_NAME = "GetRouteLists";
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl, NetworkWorker.Timeout);
 
         SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
         request.addProperty("authKey", args[0]);
@@ -32,35 +33,24 @@ public class GetRouteListsTask extends AsyncTask<String, Void, ArrayList<RouteLi
 
         try {
             httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope);
-        } catch (IOException | XmlPullParserException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
             Object routeListsObj = envelope.getResponse();
-            ArrayList<RouteList> result = null;
+            ArrayList<RouteList> routeListsArray;
 
-            if (routeListsObj instanceof SoapObject) {
-                SoapObject routeLists = (SoapObject) routeListsObj;
+            SoapObject routeLists = (SoapObject) routeListsObj;
 
-                if (routeLists.getPropertyCount() == 0)
-                    return null;
-
-                result = new ArrayList<>();
-                for (int i = 0; i < routeLists.getPropertyCount(); i++) {
-                    Object property = routeLists.getProperty(i);
-                    if (property instanceof SoapObject) {
-                        SoapObject soapObject = (SoapObject) property;
-                        RouteList routeList = new RouteList(soapObject);
-                        result.add(routeList);
-                    }
+            routeListsArray = new ArrayList<>();
+            for (int i = 0; i < routeLists.getPropertyCount(); i++) {
+                Object property = routeLists.getProperty(i);
+                if (property instanceof SoapObject) {
+                    SoapObject soapObject = (SoapObject) property;
+                    RouteList routeList = new RouteList(soapObject);
+                    routeListsArray.add(routeList);
                 }
             }
-            return result;
-        } catch (SoapFault e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            result = new AsyncTaskResult<>(routeListsArray);
+        } catch (IOException | XmlPullParserException e) {
+            result = new AsyncTaskResult<>(e);
         }
-        return null;
+        return result;
     }
 }

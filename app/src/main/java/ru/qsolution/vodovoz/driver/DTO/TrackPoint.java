@@ -3,12 +3,13 @@ package ru.qsolution.vodovoz.driver.DTO;
 import org.ksoap2.serialization.KvmSerializable;
 import org.ksoap2.serialization.PropertyInfo;
 
+import java.io.Serializable;
 import java.util.Hashtable;
 
 /**
  * Created by Andrei on 14.06.16.
  */
-public class TrackPoint implements KvmSerializable {
+public class TrackPoint implements KvmSerializable, Serializable {
     public String Latitude;
     public String Longitude;
     public String TimeStamp;

@@ -2,10 +2,12 @@ package ru.qsolution.vodovoz.driver.DTO;
 
 import org.ksoap2.serialization.SoapObject;
 
+import java.io.Serializable;
+
 /**
  * Created by Andrei on 08.06.16.
  */
-public class ShortOrder {
+public class ShortOrder implements Serializable {
     public String Id;
     public String DeliverySchedule;
     public String OrderStatus;

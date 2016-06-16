@@ -1,28 +1,27 @@
 package ru.qsolution.vodovoz.driver;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
-import java.util.concurrent.ExecutionException;
+
 import ru.qsolution.vodovoz.driver.AsyncTasks.*;
-import ru.qsolution.vodovoz.driver.Services.LocationService;
+
+/**
+ * Created by Andrei Vinogradov on 07.06.16.
+ * (c) Quality Solution Ltd.
+ */
 
 public class LoginActivity extends AppCompatActivity {
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 42;
-    private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 24;
-
     EditText usernameInput;
     EditText passwordInput;
     Button loginButton;
@@ -31,7 +30,11 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Context context = this.getApplicationContext();
+        SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
         Bundle extras = getIntent().getExtras();
+
+        //Checking if needed to close app
         if (extras != null) {
             if (extras.getBoolean("EXIT", false)) {
                 finish();
@@ -39,37 +42,30 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         //Checking authorization
-        Context context = this.getApplicationContext();
-        SharedPreferences sharedPref = context.getSharedPreferences(
-                getString(R.string.auth_file_key), Context.MODE_PRIVATE);
         if (sharedPref.contains("Authkey")) {
             try {
-                Boolean authOk = new CheckAuthTask().execute(sharedPref.getString("Authkey", "")).get();
+                AsyncTaskResult<Boolean> authResult = new CheckAuthTask().execute(sharedPref.getString("Authkey", "")).get();
                 //If already authorized - open route lists activity
-                if (authOk != null && authOk) {
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
-
-                    }
-                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        ActivityCompat.requestPermissions(this,
-                                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                                MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
-
-                    }
-
+                if (authResult.getException() == null && authResult.getResult()) {
                     Intent i = new Intent(this, RouteListsActivity.class);
                     startActivity(i);
                     finish();
-                } else if (authOk != null){
+                }
+                //If wrong or expired session - delete session key
+                else if (authResult.getException() == null && !authResult.getResult()) {
                     SharedPreferences.Editor edit = sharedPref.edit();
                     edit.remove("Authkey");
                     edit.apply();
                 }
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                //If exception
+                else {
+                    Toast toast = Toast.makeText(this, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                    toast.show();
+                    throw authResult.getException();
+                }
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
             }
         }
 
@@ -86,27 +82,35 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     // Create password MD5 Hash
-                    String passString= new String(Hex.encodeHex(DigestUtils.sha1(passwordInput.getText().toString())));
-                    Object result = new LoginTask().execute(usernameInput.getText().toString(), passString).get();
+                    String passString = new String(Hex.encodeHex(DigestUtils.sha1(passwordInput.getText().toString())));
+                    AsyncTaskResult<String> result = new LoginTask().execute(usernameInput.getText().toString(), passString).get();
 
                     Context context = LoginActivity.this.getApplicationContext();
 
-                    if (result == null) {
+                    //If authorization was unsuccessful
+                    if (result.getException() == null && result.getResult() == null) {
                         Toast toast = Toast.makeText(context, R.string.authorization_failed, Toast.LENGTH_LONG);
                         toast.show();
                     }
-                    else {
-                        SharedPreferences sharedPref = context.getSharedPreferences(
-                                getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+                    //If authorization was success
+                    else if (result.getException() == null && result.getResult() != null) {
+                        SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString("Authkey", result.toString());
+                        editor.putString("Authkey", result.getResult());
                         editor.apply();
                         Intent i = new Intent(LoginActivity.this, RouteListsActivity.class);
                         startActivity(i);
                         finish();
                     }
-                } catch (InterruptedException | ExecutionException e) {
-                    e.printStackTrace();
+                    //If exception occurred
+                    else {
+                        Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                        toast.show();
+                        throw result.getException();
+                    }
+                } catch (Exception e) {
+                    if (BuildConfig.DEBUG)
+                        e.printStackTrace();
                 }
             }
         });

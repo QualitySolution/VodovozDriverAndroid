@@ -2,6 +2,7 @@ package ru.qsolution.vodovoz.driver.DTO;
 
 import org.ksoap2.serialization.SoapObject;
 
+import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,7 +10,7 @@ import java.util.Date;
 /**
  * Created by Andrei on 08.06.16.
  */
-public class RouteList {
+public class RouteList implements Serializable{
     public String Id;
     private String status;
     public String Forwarder;
