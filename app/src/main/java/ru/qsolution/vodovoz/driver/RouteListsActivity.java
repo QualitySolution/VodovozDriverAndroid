@@ -32,9 +32,28 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_lists);
+        Bundle extras = getIntent().getExtras();
         list = (ListView) findViewById(R.id.routeListsListView);
         context = this.getApplicationContext();
         sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+
+        if (extras != null) {
+            if (extras.getBoolean("EXIT", false)) {
+                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.putExtra("EXIT", true);
+                startActivity(i);
+                finish();
+                return;
+            }
+            if (extras.getBoolean("LOGOUT", false)) {
+                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+                finish();
+                return;
+            }
+        }
 
         GetRouteListsTask task = new GetRouteListsTask();
         task.addListener(this);

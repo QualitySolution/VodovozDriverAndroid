@@ -125,19 +125,20 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity implements IA
             editor.remove("Authkey");
             editor.apply();
 
-            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            Intent i = new Intent(getApplicationContext(), RouteListsActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            i.putExtra("LOGOUT", true);
             startActivity(i);
             finish();
         } else if (item.getItemId() == R.id.taskExitBtn) {
-            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            Intent i = new Intent(getApplicationContext(), RouteListsActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             i.putExtra("EXIT", true);
             startActivity(i);
             finish();
         } else if (item.getItemId() == R.id.taskShutdownBtn) {
             ServiceWorker.StopLocationService(this);
-            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+            Intent i = new Intent(getApplicationContext(), RouteListsActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             i.putExtra("EXIT", true);
             startActivity(i);
