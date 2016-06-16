@@ -44,8 +44,12 @@ public class OrdersAdapter extends ArrayAdapter<ShortOrder> {
         orderClient.setText(ordersList.get(position).Counterparty);
         orderAddress.setText(ordersList.get(position).Address);
 
-        if (ordersList.get(position).OrderStatus.equals("В пути"))
-            orderStatus.setTextColor(Color.parseColor("#36b032"));
+        switch (ordersList.get(position).OrderStatus) {
+            case "Выполнен": orderStatus.setTextColor(context.getResources().getColor(R.color.green)); break;
+            case "Отмена клиентом": orderStatus.setTextColor(context.getResources().getColor(R.color.grey)); break;
+            case "Опоздали": orderStatus.setTextColor(context.getResources().getColor(R.color.red)); break;
+            default: orderStatus.setTextColor(Color.BLACK); break;
+        }
         return rowView;
     }
 }

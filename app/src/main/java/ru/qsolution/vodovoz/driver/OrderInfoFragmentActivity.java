@@ -8,14 +8,19 @@ import android.net.Uri;
 import android.opengl.Visibility;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.util.List;
 
+import ru.qsolution.vodovoz.driver.ArrayAdapters.OrderStatusAdapter;
 import ru.qsolution.vodovoz.driver.DTO.Order;
 
 public class OrderInfoFragmentActivity extends Fragment {
@@ -43,7 +48,6 @@ public class OrderInfoFragmentActivity extends Fragment {
             TextView orderNumber = (TextView) rootView.findViewById(R.id.orderNumber);
             TextView orderClient = (TextView) rootView.findViewById(R.id.orderClient);
             TextView orderAddress = (TextView) rootView.findViewById(R.id.orderAddress);
-            TextView orderStatus = (TextView) rootView.findViewById(R.id.orderStatus);
             TextView orderDeliveryTime = (TextView) rootView.findViewById(R.id.orderDeliveryTime);
             TextView orderComment = (TextView) rootView.findViewById(R.id.orderComment);
             TextView orderCommentTitle = (TextView) rootView.findViewById(R.id.orderCommentTitle);
@@ -54,7 +58,6 @@ public class OrderInfoFragmentActivity extends Fragment {
             orderNumber.setText(order.Title);
             orderClient.setText(order.Counterparty);
             orderAddress.setText(order.Address);
-            orderStatus.setText(order.RouteListItemStatus);
             orderDeliveryTime.setText(order.DeliverySchedule);
             if (order.OrderComment == null || order.OrderComment.equals("")) {
                 orderCommentTitle.setVisibility(View.GONE);
@@ -70,8 +73,15 @@ public class OrderInfoFragmentActivity extends Fragment {
                 deliveryPointComment.setText(order.OrderComment);
             }
 
-            if (order.RouteListItemStatus.equals("В пути"))
-                orderStatus.setTextColor(Color.parseColor("#36b032"));
+            Spinner spinner = (Spinner) rootView.findViewById(R.id.orderStatusSpinner);
+
+            String[] array = getActivity().getResources().getStringArray(R.array.order_status_array);
+            ArrayAdapter<String> adapter = new OrderStatusAdapter(getActivity(), array);
+            spinner.setAdapter(adapter);
+            int position = adapter.getPosition(order.RouteListItemStatus);
+            spinner.setSelection(position);
+
+
 
             //Setting up Get Route button
             if (order.Latitude != null && order.Longitude != null) {
