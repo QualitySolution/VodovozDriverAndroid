@@ -8,6 +8,8 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ru.qsolution.vodovoz.driver.DTO.Order;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
@@ -18,12 +20,18 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
  */
 
 public class GetOrderDetailedTask extends AsyncTask<String, Void, AsyncTaskResult<Order>> {
+    private List<IAsyncTaskListener<AsyncTaskResult<Order>>> listeners = new ArrayList<>();
+
+    public void addListener(IAsyncTaskListener<AsyncTaskResult<Order>> toAdd) {
+        listeners.add(toAdd);
+    }
+
     @Override
     protected AsyncTaskResult<Order> doInBackground(String... args) {
         AsyncTaskResult<Order> result;
         String METHOD_NAME = "GetOrderDetailed";
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl, NetworkWorker.Timeout);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
 
         SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
         request.addProperty("authKey", args[0]);
@@ -41,5 +49,12 @@ public class GetOrderDetailedTask extends AsyncTask<String, Void, AsyncTaskResul
             result = new AsyncTaskResult<>(e);
         }
         return result;
+    }
+
+    @Override
+    protected void onPostExecute(AsyncTaskResult<Order> result) {
+        for (IAsyncTaskListener<AsyncTaskResult<Order>> listener : listeners) {
+            listener.AsyncTaskCompleted(result);
+        }
     }
 }

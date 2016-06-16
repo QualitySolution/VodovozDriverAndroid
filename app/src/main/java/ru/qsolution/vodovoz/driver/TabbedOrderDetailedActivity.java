@@ -19,10 +19,11 @@ import android.widget.Toast;
 
 import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrderDetailedTask;
+import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.Order;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
-public class TabbedOrderDetailedActivity extends AppCompatActivity {
+public class TabbedOrderDetailedActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<Order>> {
     private SharedPreferences sharedPref;
     private AsyncTaskResult<Order> result;
 
@@ -31,29 +32,36 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tabbed_order_detailed);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-        // Set up the ViewPager with the sections adapter.
-        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
         Context context = this.getApplicationContext();
         sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
         Bundle extras = getIntent().getExtras();
 
+        GetOrderDetailedTask task = new GetOrderDetailedTask();
+        task.addListener(this);
+        task.execute(sharedPref.getString("Authkey", ""), extras.getString("OrderId"));
+    }
+
+    @Override
+    public void AsyncTaskCompleted(AsyncTaskResult<Order> result) {
         try {
-            result = new GetOrderDetailedTask().execute(sharedPref.getString("Authkey", ""), extras.getString("OrderId")).get();
+            this.result = result;
+            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            setSupportActionBar(toolbar);
+            // Create the adapter that will return a fragment for each of the three
+            // primary sections of the activity.
+            SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+
+            // Set up the ViewPager with the sections adapter.
+            ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(mViewPager);
+
             if ((result.getException() == null && result.getResult() == null) || result.getException() != null) {
-                finish();
                 Toast toast = Toast.makeText(this, "Не удалось загрузить заказ.", Toast.LENGTH_LONG);
                 toast.show();
+                finish();
                 if (result.getException() != null)
                     throw result.getException();
             }
@@ -76,9 +84,10 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity {
                     return OrderInfoFragmentActivity.newInstance(position, result.getResult());
                 case 1:
                     return OrderContactsFragmentActivity.newInstance(position, result.getResult());
-                default:
+                case 2:
                     return OrderItemsFragmentActivity.newInstance(position, result.getResult());
             }
+            return null;
         }
 
         @Override

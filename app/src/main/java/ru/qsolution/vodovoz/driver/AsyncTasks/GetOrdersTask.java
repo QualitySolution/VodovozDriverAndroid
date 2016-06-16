@@ -9,6 +9,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.qsolution.vodovoz.driver.DTO.ShortOrder;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
@@ -19,6 +20,12 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
  */
 
 public class GetOrdersTask extends AsyncTask<String, Void, AsyncTaskResult<ArrayList<ShortOrder>>> {
+    private List<IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>>> listeners = new ArrayList<>();
+
+    public void addListener(IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>> toAdd) {
+        listeners.add(toAdd);
+    }
+
     @Override
     protected AsyncTaskResult<ArrayList<ShortOrder>> doInBackground(String... args) {
         AsyncTaskResult<ArrayList<ShortOrder>> result;
@@ -54,5 +61,12 @@ public class GetOrdersTask extends AsyncTask<String, Void, AsyncTaskResult<Array
             result = new AsyncTaskResult<>(e);
         }
         return result;
+    }
+
+    @Override
+    protected void onPostExecute(AsyncTaskResult<ArrayList<ShortOrder>> result) {
+        for (IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>> listener : listeners) {
+            listener.AsyncTaskCompleted(result);
+        }
     }
 }

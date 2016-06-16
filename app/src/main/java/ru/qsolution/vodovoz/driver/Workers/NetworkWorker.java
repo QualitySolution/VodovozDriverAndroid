@@ -10,7 +10,6 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
 public class NetworkWorker {
     private static final String actionInterface = "IAndroidDriverService/";
 
-    public static final Integer Timeout = 10000;
     public static final String Namespace = "http://tempuri.org/";
     public static final String ServiceUrl = "http://saas.qsolution.ru:9000/AndroidDriverService";
     //public static final String ServiceUrl = "http://10.204.250.124:9000/AndroidDriverService";

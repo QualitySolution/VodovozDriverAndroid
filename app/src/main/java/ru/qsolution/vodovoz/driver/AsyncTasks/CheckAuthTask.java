@@ -9,6 +9,8 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
@@ -18,6 +20,12 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
  */
 
 public class CheckAuthTask extends AsyncTask<String, Void, AsyncTaskResult<Boolean>> {
+    private List<IAsyncTaskListener<AsyncTaskResult<Boolean>>> listeners = new ArrayList<>();
+
+    public void addListener(IAsyncTaskListener<AsyncTaskResult<Boolean>> toAdd) {
+        listeners.add(toAdd);
+    }
+
     @Override
     protected AsyncTaskResult<Boolean> doInBackground(String... args) {
         AsyncTaskResult<Boolean> result;
@@ -38,5 +46,12 @@ public class CheckAuthTask extends AsyncTask<String, Void, AsyncTaskResult<Boole
             result = new AsyncTaskResult<>(e);
         }
         return result;
+    }
+
+    @Override
+    protected void onPostExecute(AsyncTaskResult<Boolean> result) {
+        for (IAsyncTaskListener<AsyncTaskResult<Boolean>> listener : listeners) {
+            listener.AsyncTaskCompleted(result);
+        }
     }
 }

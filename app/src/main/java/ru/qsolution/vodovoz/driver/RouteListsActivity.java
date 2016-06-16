@@ -18,23 +18,32 @@ import java.util.ArrayList;
 import ru.qsolution.vodovoz.driver.ArrayAdapters.RouteListAdapter;
 import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetRouteListsTask;
+import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.RouteList;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
-public class RouteListsActivity extends AppCompatActivity {
+public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>>{
     private RouteListAdapter adapter;
     private SharedPreferences sharedPref;
+    private ListView list;
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_lists);
-        ListView list = (ListView) findViewById(R.id.routeListsListView);
-        Context context = this.getApplicationContext();
+        list = (ListView) findViewById(R.id.routeListsListView);
+        context = this.getApplicationContext();
         sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
 
+        GetRouteListsTask task = new GetRouteListsTask();
+        task.addListener(this);
+        task.execute(sharedPref.getString("Authkey", ""));
+    }
+
+    @Override
+    public void AsyncTaskCompleted(AsyncTaskResult<ArrayList<RouteList>> result) {
         try {
-            AsyncTaskResult<ArrayList<RouteList>> result = new GetRouteListsTask().execute(sharedPref.getString("Authkey", "")).get();
             if (result.getException() == null && result.getResult() != null && result.getResult().size() > 0) {
                 adapter = new RouteListAdapter(this, result.getResult());
                 list.setAdapter(adapter);
@@ -52,6 +61,7 @@ public class RouteListsActivity extends AppCompatActivity {
             } else {
                 Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
                 toast.show();
+                finish();
                 throw result.getException();
             }
         } catch (Exception e) {

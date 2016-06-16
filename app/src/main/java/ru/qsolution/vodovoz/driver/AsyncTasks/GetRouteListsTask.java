@@ -9,6 +9,7 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import ru.qsolution.vodovoz.driver.DTO.RouteList;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
@@ -19,12 +20,18 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
  */
 
 public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<ArrayList<RouteList>>> {
+    private List<IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>>> listeners = new ArrayList<>();
+
+    public void addListener(IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>> toAdd) {
+        listeners.add(toAdd);
+    }
+
     @Override
     protected AsyncTaskResult<ArrayList<RouteList>> doInBackground(String... args) {
         AsyncTaskResult<ArrayList<RouteList>> result;
         String METHOD_NAME = "GetRouteLists";
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl, NetworkWorker.Timeout);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
 
         SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
         request.addProperty("authKey", args[0]);
@@ -52,5 +59,12 @@ public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<A
             result = new AsyncTaskResult<>(e);
         }
         return result;
+    }
+
+    @Override
+    protected void onPostExecute(AsyncTaskResult<ArrayList<RouteList>> result) {
+        for (IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>> listener : listeners) {
+            listener.AsyncTaskCompleted(result);
+        }
     }
 }

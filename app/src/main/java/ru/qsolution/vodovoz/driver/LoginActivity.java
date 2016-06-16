@@ -43,30 +43,10 @@ public class LoginActivity extends AppCompatActivity {
         }
         //Checking authorization
         if (sharedPref.contains("Authkey")) {
-            try {
-                AsyncTaskResult<Boolean> authResult = new CheckAuthTask().execute(sharedPref.getString("Authkey", "")).get();
-                //If already authorized - open route lists activity
-                if (authResult.getException() == null && authResult.getResult()) {
-                    Intent i = new Intent(this, RouteListsActivity.class);
-                    startActivity(i);
-                    finish();
-                }
-                //If wrong or expired session - delete session key
-                else if (authResult.getException() == null && !authResult.getResult()) {
-                    SharedPreferences.Editor edit = sharedPref.edit();
-                    edit.remove("Authkey");
-                    edit.apply();
-                }
-                //If exception
-                else {
-                    Toast toast = Toast.makeText(this, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
-                    toast.show();
-                    throw authResult.getException();
-                }
-            } catch (Exception e) {
-                if (BuildConfig.DEBUG)
-                    e.printStackTrace();
-            }
+            CheckAuthListener listener = new CheckAuthListener(this, sharedPref);
+            CheckAuthTask task = new CheckAuthTask();
+            task.addListener(listener);
+            task.execute(sharedPref.getString("Authkey", ""));
         }
 
         setContentView(R.layout.activity_login);
@@ -80,40 +60,94 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    // Create password MD5 Hash
-                    String passString = new String(Hex.encodeHex(DigestUtils.sha1(passwordInput.getText().toString())));
-                    AsyncTaskResult<String> result = new LoginTask().execute(usernameInput.getText().toString(), passString).get();
+                // Create password MD5 Hash
+                String passString = new String(Hex.encodeHex(DigestUtils.sha1(passwordInput.getText().toString())));
+                Context context = LoginActivity.this.getApplicationContext();
+                SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+                LoginListener listener = new LoginListener(context, sharedPref);
 
-                    Context context = LoginActivity.this.getApplicationContext();
+                LoginTask task = new LoginTask();
+                task.addListener(listener);
+                task.execute(usernameInput.getText().toString(), passString);
 
-                    //If authorization was unsuccessful
-                    if (result.getException() == null && result.getResult() == null) {
-                        Toast toast = Toast.makeText(context, R.string.authorization_failed, Toast.LENGTH_LONG);
-                        toast.show();
-                    }
-                    //If authorization was success
-                    else if (result.getException() == null && result.getResult() != null) {
-                        SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
-                        SharedPreferences.Editor editor = sharedPref.edit();
-                        editor.putString("Authkey", result.getResult());
-                        editor.apply();
-                        Intent i = new Intent(LoginActivity.this, RouteListsActivity.class);
-                        startActivity(i);
-                        finish();
-                    }
-                    //If exception occurred
-                    else {
-                        Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
-                        toast.show();
-                        throw result.getException();
-                    }
-                } catch (Exception e) {
-                    if (BuildConfig.DEBUG)
-                        e.printStackTrace();
-                }
             }
         });
     }
+
+    private class LoginListener implements IAsyncTaskListener<AsyncTaskResult<String>> {
+        private Context context;
+        private SharedPreferences sharedPref;
+
+        public LoginListener(Context context, SharedPreferences sharedPref) {
+            this.context = context;
+            this.sharedPref = sharedPref;
+        }
+
+        @Override
+        public void AsyncTaskCompleted(AsyncTaskResult<String> result) {
+            try {
+                //If authorization was unsuccessful
+                if (result.getException() == null && result.getResult() == null) {
+                    Toast toast = Toast.makeText(context, R.string.authorization_failed, Toast.LENGTH_LONG);
+                    toast.show();
+                }
+                //If authorization was success
+                else if (result.getException() == null && result.getResult() != null) {
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString("Authkey", result.getResult());
+                    editor.apply();
+                    Intent i = new Intent(context, RouteListsActivity.class);
+                    startActivity(i);
+                    finish();
+                }
+                //If exception occurred
+                else {
+                    Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                    toast.show();
+                    throw result.getException();
+                }
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
+            }
+        }
+    }
+
+    private class CheckAuthListener implements IAsyncTaskListener<AsyncTaskResult<Boolean>> {
+        private Context context;
+        private SharedPreferences sharedPref;
+
+        public CheckAuthListener(Context context, SharedPreferences sharedPref) {
+            this.context = context;
+            this.sharedPref = sharedPref;
+        }
+
+        @Override
+        public void AsyncTaskCompleted(AsyncTaskResult<Boolean> result) {
+            try {
+                if (result.getException() == null && result.getResult()) {
+                    Intent i = new Intent(context, RouteListsActivity.class);
+                    startActivity(i);
+                    finish();
+                }
+                //If wrong or expired session - delete session key
+                else if (result.getException() == null && !result.getResult()) {
+                    SharedPreferences.Editor edit = sharedPref.edit();
+                    edit.remove("Authkey");
+                    edit.apply();
+                }
+                //If exception
+                else {
+                    Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                    toast.show();
+                    throw result.getException();
+                }
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
+            }
+        }
+    }
 }
+
 

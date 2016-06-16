@@ -19,53 +19,62 @@ import java.util.ArrayList;
 import ru.qsolution.vodovoz.driver.ArrayAdapters.OrdersAdapter;
 import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrdersTask;
+import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.ShortOrder;
 import ru.qsolution.vodovoz.driver.Services.LocationService;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
-public class OrdersActivity extends AppCompatActivity {
+public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>> {
     private OrdersAdapter adapter;
     private SharedPreferences sharedPref;
     private String routeListId;
+    private Context context;
+    private ListView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_orders);
 
-        Context context = this.getApplicationContext();
-        ListView list = (ListView) findViewById(R.id.ordersListView);
+        context = this.getApplicationContext();
+        list = (ListView) findViewById(R.id.ordersListView);
         Bundle extras = getIntent().getExtras();
         sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
 
         if (extras != null) {
-            try {
-                routeListId = extras.getString("RouteListId");
-                AsyncTaskResult<ArrayList<ShortOrder>> result = new GetOrdersTask().execute(sharedPref.getString("Authkey", ""), routeListId).get();
+            routeListId = extras.getString("RouteListId");
+            GetOrdersTask task = new GetOrdersTask();
+            task.addListener(this);
+            task.execute(sharedPref.getString("Authkey", ""), routeListId);
+        }
+    }
 
-                if (result.getException() == null && result.getResult() != null && result.getResult().size() > 0) {
-                    adapter = new OrdersAdapter(this, result.getResult());
-                    list.setAdapter(adapter);
-                    list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            ShortOrder order = adapter.getItem(position);
-                            Intent intent = new Intent(OrdersActivity.this, TabbedOrderDetailedActivity.class);
-                            intent.putExtra("OrderId", order.Id);
-                            startActivity(intent);
-                        }
-                    });
-                } else if (result.getException() == null && (result.getResult() == null || result.getResult().size() == 0)) {
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{"Заказы отсутствуют"});
-                    list.setAdapter(adapter);
-                } else {
-                    Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
-                    toast.show();
-                    throw result.getException();
-                }
-            } catch (Exception e) {
-                if (BuildConfig.DEBUG)
-                    e.printStackTrace();
+    @Override
+    public void AsyncTaskCompleted(AsyncTaskResult<ArrayList<ShortOrder>> result) {
+        try {
+            if (result.getException() == null && result.getResult() != null && result.getResult().size() > 0) {
+                adapter = new OrdersAdapter(this, result.getResult());
+                list.setAdapter(adapter);
+                list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        ShortOrder order = adapter.getItem(position);
+                        Intent intent = new Intent(OrdersActivity.this, TabbedOrderDetailedActivity.class);
+                        intent.putExtra("OrderId", order.Id);
+                        startActivity(intent);
+                    }
+                });
+            } else if (result.getException() == null && (result.getResult() == null || result.getResult().size() == 0)) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, new String[]{"Заказы отсутствуют"});
+                list.setAdapter(adapter);
+            } else {
+                Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                toast.show();
+                finish();
+                throw result.getException();
             }
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG)
+                e.printStackTrace();
         }
     }
 
