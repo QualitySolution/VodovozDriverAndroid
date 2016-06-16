@@ -77,6 +77,7 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
 
         @Override
         public void onProviderDisabled(String provider) {
+            //TODO: On disable send array;
         }
     };
 
@@ -103,7 +104,6 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
             StartTrackTask task = new StartTrackTask();
             task.addListener(this);
             task.execute(authKey, RouteListId);
-
         }
         return super.onStartCommand(intent, flags, startId);
     }

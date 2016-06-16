@@ -1,8 +1,11 @@
 package ru.qsolution.vodovoz.driver;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.menu.ActionMenuItemView;
@@ -26,6 +29,9 @@ import ru.qsolution.vodovoz.driver.Services.LocationService;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
 public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>> {
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 42;
+    private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 24;
+
     private OrdersAdapter adapter;
     private SharedPreferences sharedPref;
     private String routeListId;
@@ -129,13 +135,59 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
             startActivity(i);
             finish();
         } else if (item.getItemId() == R.id.taskAcceptRouteListBtn) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+                return super.onOptionsItemSelected(item);
+            }
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+                return super.onOptionsItemSelected(item);
+            }
+
             ServiceWorker.StopLocationService(this);
             ServiceWorker.StartLocationService(this, routeListId);
             ActionMenuItemView accept = (ActionMenuItemView) findViewById(R.id.taskAcceptRouteListBtn);
             accept.setEnabled(false);
             accept.setTitle("Принят");
-            //TODO
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+                    } else {
+                        ServiceWorker.StopLocationService(this);
+                        ServiceWorker.StartLocationService(this, routeListId);
+                        ActionMenuItemView accept = (ActionMenuItemView) findViewById(R.id.taskAcceptRouteListBtn);
+                        accept.setEnabled(false);
+                        accept.setTitle("Принят");
+                    }
+                } else {
+                    Toast toast = Toast.makeText(context, "Для использования данной функции необходим доступ к местоположению.", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+            case MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+                    } else {
+                        ServiceWorker.StopLocationService(this);
+                        ServiceWorker.StartLocationService(this, routeListId);
+                        ActionMenuItemView accept = (ActionMenuItemView) findViewById(R.id.taskAcceptRouteListBtn);
+                        accept.setEnabled(false);
+                        accept.setTitle("Принят");
+                    }
+                } else {
+                    Toast toast = Toast.makeText(context, "Для использования данной функции необходим доступ к местоположению.", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+            }
+        }
     }
 }
