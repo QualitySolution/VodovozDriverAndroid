@@ -3,6 +3,7 @@ package ru.qsolution.vodovoz.driver.AsyncTasks;
 import android.os.AsyncTask;
 
 import org.ksoap2.serialization.SoapObject;
+import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
@@ -40,7 +41,8 @@ public class LoginTask extends AsyncTask<String, Void, AsyncTaskResult<String>> 
 
         try {
             httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope);
-            result = new AsyncTaskResult<>((String)envelope.getResponse());
+            SoapPrimitive primitive = (SoapPrimitive)envelope.getResponse();
+            result = new AsyncTaskResult<>(primitive.getValue().toString());
         } catch (XmlPullParserException | IOException e) {
             result = new AsyncTaskResult<>(e);
         }
