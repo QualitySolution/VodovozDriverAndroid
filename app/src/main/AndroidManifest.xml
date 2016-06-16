@@ -25,14 +25,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".OrdersActivity" />
-        <activity android:name=".RouteListsActivity" />
+        <activity
+            android:name=".OrdersActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name=".RouteListsActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity
             android:name=".TabbedOrderDetailedActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".OrderItemsFragmentActivity"></activity>
-
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
         <service
             android:name=".Services.LocationService"
             android:exported="false"/>

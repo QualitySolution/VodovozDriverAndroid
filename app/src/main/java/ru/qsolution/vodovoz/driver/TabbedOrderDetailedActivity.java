@@ -36,7 +36,7 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity implements IA
         sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
         Bundle extras = getIntent().getExtras();
 
-        GetOrderDetailedTask task = new GetOrderDetailedTask();
+        GetOrderDetailedTask task = new GetOrderDetailedTask(this);
         task.addListener(this);
         task.execute(sharedPref.getString("Authkey", ""), extras.getString("OrderId"));
     }

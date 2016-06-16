@@ -9,6 +9,7 @@ import android.support.v7.view.menu.ActionMenuItemView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -34,6 +35,8 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setProgressBarIndeterminateVisibility(true);
         setContentView(R.layout.activity_orders);
 
         context = this.getApplicationContext();
@@ -43,7 +46,7 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
 
         if (extras != null) {
             routeListId = extras.getString("RouteListId");
-            GetOrdersTask task = new GetOrdersTask();
+            GetOrdersTask task = new GetOrdersTask(this);
             task.addListener(this);
             task.execute(sharedPref.getString("Authkey", ""), routeListId);
         }
@@ -76,6 +79,7 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
             if (BuildConfig.DEBUG)
                 e.printStackTrace();
         }
+        setProgressBarIndeterminateVisibility(false);
     }
 
     @Override

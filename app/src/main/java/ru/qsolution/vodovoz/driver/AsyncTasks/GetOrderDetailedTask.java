@@ -1,6 +1,9 @@
 package ru.qsolution.vodovoz.driver.AsyncTasks;
 
+import android.app.Activity;
 import android.os.AsyncTask;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -8,10 +11,12 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import ru.qsolution.vodovoz.driver.DTO.Order;
+import ru.qsolution.vodovoz.driver.R;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
 /**
@@ -21,9 +26,21 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
 public class GetOrderDetailedTask extends AsyncTask<String, Void, AsyncTaskResult<Order>> {
     private List<IAsyncTaskListener<AsyncTaskResult<Order>>> listeners = new ArrayList<>();
+    private LinearLayout linlaHeaderProgress;
+    private WeakReference<Activity> weakActivity;
+
+    public GetOrderDetailedTask(Activity activity) {
+        weakActivity = new WeakReference<>(activity);
+        linlaHeaderProgress = (LinearLayout) activity.findViewById(R.id.linlaHeaderProgress);
+    }
 
     public void addListener(IAsyncTaskListener<AsyncTaskResult<Order>> toAdd) {
         listeners.add(toAdd);
+    }
+
+    @Override
+    protected void onPreExecute() {
+        linlaHeaderProgress.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -56,5 +73,6 @@ public class GetOrderDetailedTask extends AsyncTask<String, Void, AsyncTaskResul
         for (IAsyncTaskListener<AsyncTaskResult<Order>> listener : listeners) {
             listener.AsyncTaskCompleted(result);
         }
+        linlaHeaderProgress.setVisibility(View.GONE);
     }
 }

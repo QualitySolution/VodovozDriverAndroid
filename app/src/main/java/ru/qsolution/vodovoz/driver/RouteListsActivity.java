@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -32,6 +33,7 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_route_lists);
+
         Bundle extras = getIntent().getExtras();
         list = (ListView) findViewById(R.id.routeListsListView);
         context = this.getApplicationContext();
@@ -55,7 +57,7 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
             }
         }
 
-        GetRouteListsTask task = new GetRouteListsTask();
+        GetRouteListsTask task = new GetRouteListsTask(this);
         task.addListener(this);
         task.execute(sharedPref.getString("Authkey", ""));
     }
