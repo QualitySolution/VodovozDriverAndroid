@@ -12,6 +12,11 @@ import ru.qsolution.vodovoz.driver.Workers.SoapWorker;
  * Created by Andrei on 08.06.16.
  */
 public class Order implements Serializable {
+    public static final String STATUS_EN_ROUTE = "EnRoute";
+    public static final String STATUS_COMPLETED = "Completed";
+    public static final String STATUS_CANCELED = "Canceled";
+    public static final String STATUS_OVERDUE = "Overdue";
+
     public String Id;
     public String Title;
     public String Region;                   //FIXME: Not used
@@ -21,8 +26,7 @@ public class Order implements Serializable {
     public String Contact;
     public String Phone;
     public String DeliverySchedule;
-    public String OrderStatus;
-    public String RouteListItemStatus;      //TODO: Not used
+    public String RouteListItemStatus;
     public String OrderComment;             //TODO: Not used
     public String Counterparty;
     public String Address;
@@ -43,10 +47,9 @@ public class Order implements Serializable {
         Phone = SoapWorker.SafeGetPropertyAsString(soapObject, "DPPhone");
         Address = SoapWorker.SafeGetPropertyAsString(soapObject, "Address");
         DeliverySchedule = SoapWorker.SafeGetPropertyAsString(soapObject, "DeliverySchedule");
-        OrderStatus = SoapWorker.SafeGetPropertyAsString(soapObject, "OrderStatus");
         OrderComment = SoapWorker.SafeGetPropertyAsString(soapObject, "OrderComment");
         Counterparty = SoapWorker.SafeGetPropertyAsString(soapObject, "Counterparty");
-        RouteListItemStatus = "FIX ME";
+        RouteListItemStatus = SoapWorker.SafeGetPropertyAsString(soapObject, "RouteListItemStatus");
         Phones = new ArrayList<>();
         if (soapObject.getProperty("CPPhones") instanceof SoapObject) {
             SoapObject phones = (SoapObject)soapObject.getProperty("CPPhones");

@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.Color;
 import android.net.Uri;
+import android.opengl.Visibility;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -44,15 +45,32 @@ public class OrderInfoFragmentActivity extends Fragment {
             TextView orderAddress = (TextView) rootView.findViewById(R.id.orderAddress);
             TextView orderStatus = (TextView) rootView.findViewById(R.id.orderStatus);
             TextView orderDeliveryTime = (TextView) rootView.findViewById(R.id.orderDeliveryTime);
+            TextView orderComment = (TextView) rootView.findViewById(R.id.orderComment);
+            TextView orderCommentTitle = (TextView) rootView.findViewById(R.id.orderCommentTitle);
+            TextView deliveryPointComment = (TextView) rootView.findViewById(R.id.deliveryPointComment);
+            TextView deliveryPointCommentTitle = (TextView) rootView.findViewById(R.id.deliveryPointCommentTitle);
             Button getRoute = (Button) rootView.findViewById(R.id.buttonGetRoute);
 
             orderNumber.setText(order.Title);
             orderClient.setText(order.Counterparty);
             orderAddress.setText(order.Address);
-            orderStatus.setText(order.OrderStatus);
+            orderStatus.setText(order.RouteListItemStatus);
             orderDeliveryTime.setText(order.DeliverySchedule);
+            if (order.OrderComment == null || order.OrderComment.equals("")) {
+                orderCommentTitle.setVisibility(View.GONE);
+                orderComment.setVisibility(View.GONE);
+            } else {
+                orderComment.setText(order.OrderComment);
+            }
 
-            if (order.OrderStatus.equals("В пути"))
+            if (order.DeliveryPointComment == null || order.DeliveryPointComment.equals("")) {
+                deliveryPointComment.setVisibility(View.GONE);
+                deliveryPointCommentTitle.setVisibility(View.GONE);
+            } else {
+                deliveryPointComment.setText(order.OrderComment);
+            }
+
+            if (order.RouteListItemStatus.equals("В пути"))
                 orderStatus.setTextColor(Color.parseColor("#36b032"));
 
             //Setting up Get Route button

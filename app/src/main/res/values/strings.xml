@@ -10,6 +10,8 @@
 
     <string name="route_lists_activity_title">Список маршрутных листов</string>
     <string name="get_route">Построить маршрут</string>
+    <string name="order_comment_title">Комментарий к заказу</string>
+    <string name="delivery_point_comment_title">Комментарий к точке доставки</string>
     <string name="delivery_point">Точка доставки</string>
     <string name="other_contacts">Телефоны компании</string>
     <string name="call">Позвонить</string>
