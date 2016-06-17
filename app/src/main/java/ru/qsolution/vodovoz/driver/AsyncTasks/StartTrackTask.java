@@ -2,6 +2,7 @@ package ru.qsolution.vodovoz.driver.AsyncTasks;
 
 import android.os.AsyncTask;
 
+import org.ksoap2.HeaderProperty;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapPrimitive;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
@@ -39,8 +40,12 @@ public class StartTrackTask extends AsyncTask<String, Void, AsyncTaskResult<Inte
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 
+        ArrayList<HeaderProperty> headerPropertyArrayList = new ArrayList<>();
+        headerPropertyArrayList.add(new HeaderProperty("Connection", "close"));
+        System.setProperty("http.keepAlive", "false");
+
         try {
-            httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope);
+            httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope, headerPropertyArrayList);
             SoapPrimitive response = (SoapPrimitive) envelope.getResponse();
             result = new AsyncTaskResult<>(Integer.parseInt(response.getValue().toString()));
         } catch (XmlPullParserException | IOException e) {

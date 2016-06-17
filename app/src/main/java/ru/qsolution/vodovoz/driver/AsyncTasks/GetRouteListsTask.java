@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import org.ksoap2.HeaderProperty;
 import org.ksoap2.serialization.SoapObject;
 import org.ksoap2.serialization.SoapSerializationEnvelope;
 import org.ksoap2.transport.HttpTransportSE;
@@ -53,8 +54,12 @@ public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<A
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 
+        ArrayList<HeaderProperty> headerPropertyArrayList = new ArrayList<>();
+        headerPropertyArrayList.add(new HeaderProperty("Connection", "close"));
+        System.setProperty("http.keepAlive", "false");
+
         try {
-            httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope);
+            httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope, headerPropertyArrayList);
             Object routeListsObj = envelope.getResponse();
             ArrayList<RouteList> routeListsArray;
 
