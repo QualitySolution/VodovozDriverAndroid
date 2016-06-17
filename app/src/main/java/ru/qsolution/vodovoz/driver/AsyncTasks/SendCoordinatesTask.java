@@ -22,7 +22,7 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
  */
 
 public class SendCoordinatesTask extends AsyncTask<Object, Void, AsyncTaskResult<Boolean>> {
-    private List<IAsyncTaskListener<AsyncTaskResult<Boolean>>> listeners = new ArrayList<>();
+    private final List<IAsyncTaskListener<AsyncTaskResult<Boolean>>> listeners = new ArrayList<>();
 
     public void addListener(IAsyncTaskListener<AsyncTaskResult<Boolean>> toAdd) {
         listeners.add(toAdd);
@@ -38,6 +38,7 @@ public class SendCoordinatesTask extends AsyncTask<Object, Void, AsyncTaskResult
         SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
         request.addProperty("authKey", args[0].toString());
         request.addProperty("trackId", args[1].toString());
+
 
         List<TrackPoint> list = (List<TrackPoint>) args[2];
         SoapObject soapDetails = new SoapObject(NetworkWorker.Namespace, "TrackPointList");

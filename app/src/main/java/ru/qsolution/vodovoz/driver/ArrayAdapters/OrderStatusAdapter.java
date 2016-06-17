@@ -7,13 +7,12 @@ package ru.qsolution.vodovoz.driver.ArrayAdapters;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import java.util.ArrayList;
 
 import ru.qsolution.vodovoz.driver.R;
 
@@ -23,7 +22,7 @@ import ru.qsolution.vodovoz.driver.R;
 public class OrderStatusAdapter extends ArrayAdapter<String> {
 
     private final Activity context;
-    private String[] statusArray;
+    private final String[] statusArray;
 
     public OrderStatusAdapter(Activity context, String[] statusArray) {
         super(context, R.layout.spinner_item, statusArray);
@@ -51,9 +50,7 @@ public class OrderStatusAdapter extends ArrayAdapter<String> {
         TextView textView = (TextView) view.findViewById(R.id.spinner_item_text);
         textView.setText(statusArray[position]);
         switch (statusArray[position]) {
-            case "Выполнен": textView.setTextColor(context.getResources().getColor(R.color.green)); break;
-            case "Отмена клиентом": textView.setTextColor(context.getResources().getColor(R.color.grey)); break;
-            case "Опоздали": textView.setTextColor(context.getResources().getColor(R.color.red)); break;
+            case "Выполнен": textView.setTextColor(ContextCompat.getColor(context, R.color.green)); break;
             default: textView.setTextColor(Color.BLACK); break;
         }
     }

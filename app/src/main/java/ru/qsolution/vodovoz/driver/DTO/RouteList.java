@@ -11,11 +11,12 @@ import java.util.Date;
  * Created by Andrei on 08.06.16.
  */
 public class RouteList implements Serializable{
-    public String Id;
-    private String status;
-    public String Forwarder;
-    public String DeliveryShift;
+    public final String Id;
+    public final String Forwarder;
+    public final String DeliveryShift;
     public Date Date;
+
+    private final String status;
 
     public String Status() {
         switch (status) {

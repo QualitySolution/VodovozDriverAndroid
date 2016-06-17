@@ -2,6 +2,7 @@ package ru.qsolution.vodovoz.driver.ArrayAdapters;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,9 +46,9 @@ public class OrdersAdapter extends ArrayAdapter<ShortOrder> {
         orderAddress.setText(ordersList.get(position).Address);
 
         switch (ordersList.get(position).OrderStatus) {
-            case "Выполнен": orderStatus.setTextColor(context.getResources().getColor(R.color.green)); break;
-            case "Отмена клиентом": orderStatus.setTextColor(context.getResources().getColor(R.color.grey)); break;
-            case "Опоздали": orderStatus.setTextColor(context.getResources().getColor(R.color.red)); break;
+            case "Выполнен": orderStatus.setTextColor(ContextCompat.getColor(context, R.color.green)); break;
+            case "Отмена клиентом": orderStatus.setTextColor(ContextCompat.getColor(context, R.color.grey)); break;
+            case "Опоздали": orderStatus.setTextColor(ContextCompat.getColor(context, R.color.red)); break;
             default: orderStatus.setTextColor(Color.BLACK); break;
         }
         return rowView;

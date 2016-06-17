@@ -4,7 +4,6 @@ import org.ksoap2.serialization.SoapObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 import ru.qsolution.vodovoz.driver.Workers.SoapWorker;
 
@@ -17,24 +16,24 @@ public class Order implements Serializable {
     public static final String STATUS_CANCELED = "Canceled";
     public static final String STATUS_OVERDUE = "Overdue";
 
-    public String Id;
-    public String Title;
-    public String Region;                   //FIXME: Not used
-    public String CityDistrict;             //FIXME: Not used
-    public String StreetDistrict;           //FIXME: Not used
-    public String DeliveryPointComment;     //TODO: Not used
-    public String Contact;
-    public String Phone;
-    public String DeliverySchedule;
+    public final String Id;
+    public final String Title;
+    public final String Region;                   //FIXME: Not used
+    public final String CityDistrict;             //FIXME: Not used
+    public final String StreetDistrict;           //FIXME: Not used
+    public final String DeliveryPointComment;     //TODO: Not used
+    public final String Contact;
+    public final String Phone;
+    public final String DeliverySchedule;
+    public final String OrderComment;             //TODO: Not used
+    public final String Counterparty;
+    public final String Address;
+    public final ArrayList<String> Phones;
+    public final ArrayList<String> OrderItems;
+    public final ArrayList<String> OrderEquipment;
     public String RouteListItemStatus;
-    public String OrderComment;             //TODO: Not used
-    public String Counterparty;
-    public String Address;
     public Float Latitude;
     public Float Longitude;
-    public ArrayList<String> Phones;
-    public ArrayList<String> OrderItems;
-    public ArrayList<String> OrderEquipment;
 
     public Order (SoapObject soapObject) {
         Id = SoapWorker.SafeGetPropertyAsString(soapObject, "Id");

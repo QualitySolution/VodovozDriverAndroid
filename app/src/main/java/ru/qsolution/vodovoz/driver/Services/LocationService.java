@@ -35,7 +35,7 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
     private AsyncTaskResult<Integer> trackIdResult;
     private String authKey;
 
-    private LocationListener locationListener = new LocationListener() {
+    private final LocationListener locationListener = new LocationListener() {
         class AsyncTaskListener implements IAsyncTaskListener<AsyncTaskResult<Boolean>> {
             @Override
             public void AsyncTaskCompleted(AsyncTaskResult<Boolean> result) {

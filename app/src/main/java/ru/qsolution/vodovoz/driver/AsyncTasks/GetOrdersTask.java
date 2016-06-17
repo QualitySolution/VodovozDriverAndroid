@@ -25,12 +25,10 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
  */
 
 public class GetOrdersTask extends AsyncTask<String, Void, AsyncTaskResult<ArrayList<ShortOrder>>> {
-    private List<IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>>> listeners = new ArrayList<>();
-    private LinearLayout linlaHeaderProgress;
-    private WeakReference<Activity> weakActivity;
+    private final List<IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>>> listeners = new ArrayList<>();
+    private final LinearLayout linlaHeaderProgress;
 
     public GetOrdersTask(Activity activity) {
-        weakActivity = new WeakReference<>(activity);
         linlaHeaderProgress = (LinearLayout) activity.findViewById(R.id.linlaHeaderProgress);
     }
 

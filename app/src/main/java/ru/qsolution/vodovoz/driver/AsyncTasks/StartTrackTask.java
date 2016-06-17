@@ -20,7 +20,7 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
  */
 
 public class StartTrackTask extends AsyncTask<String, Void, AsyncTaskResult<Integer>> {
-    private List<IAsyncTaskListener<AsyncTaskResult<Integer>>> listeners = new ArrayList<>();
+    private final List<IAsyncTaskListener<AsyncTaskResult<Integer>>> listeners = new ArrayList<>();
 
     public void addListener(IAsyncTaskListener<AsyncTaskResult<Integer>> toAdd) {
         listeners.add(toAdd);

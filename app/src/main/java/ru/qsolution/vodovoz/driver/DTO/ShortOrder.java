@@ -8,11 +8,11 @@ import java.io.Serializable;
  * Created by Andrei on 08.06.16.
  */
 public class ShortOrder implements Serializable {
-    public String Id;
-    public String DeliverySchedule;
-    public String OrderStatus;
-    public String Counterparty;
-    public String Address;
+    public final String Id;
+    public final String DeliverySchedule;
+    public final String OrderStatus;
+    public final String Counterparty;
+    public final String Address;
 
     public ShortOrder (SoapObject soapObject) {
         Id = soapObject.getProperty("Id").toString();

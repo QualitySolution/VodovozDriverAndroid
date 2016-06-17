@@ -8,12 +8,13 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="ru.qsolution.vodovoz.driver.OrderInfoFragmentActivity">
+
     <TextView
         android:id="@+id/orderNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="%Order number%"
+        android:text="@string/placeholder_order_number"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -23,7 +24,7 @@
         android:layout_below="@+id/orderNumber"
         android:layout_centerVertical="true"
         android:gravity="center"
-        android:text="%Client Name%"
+        android:text="@string/placeholder_client_name"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 
@@ -33,9 +34,9 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/orderClient"
         android:layout_centerVertical="true"
-        android:text="%Client Address%"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:text="@string/placeholder_client_address"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:textColor="#000000" />
 
@@ -43,8 +44,8 @@
         android:id="@+id/orderDeliveryTimeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/orderAddress"
         android:gravity="center"
         android:text="@string/delivery_time"
@@ -58,26 +59,41 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/orderAddress"
         android:gravity="center"
-        android:text="%Delivery time%"
+        android:text="@string/placeholder_delivery_time"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Spinner
-        android:id="@+id/orderStatusSpinner"
+    <RelativeLayout
+        android:id="@+id/statusLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/orderDeliveryTime"
-        android:gravity="center"/>
+        android:layout_below="@+id/orderDeliveryTime">
 
+        <Spinner
+            android:id="@+id/orderStatusSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/orderStatusTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:gravity="start"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+    </RelativeLayout>
 
     <Button
         android:id="@+id/buttonGetRoute"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/orderStatusSpinner"
-        android:text="@string/get_route"
-        android:enabled="false"/>
+        android:layout_below="@+id/statusLayout"
+        android:enabled="false"
+        android:text="@string/get_route" />
+
     <TextView
         android:id="@+id/orderCommentTitle"
         android:layout_width="match_parent"
@@ -97,8 +113,9 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/orderCommentTitle"
-        android:text="%Order comment%"
+        android:text="@string/placeholder_order_comments"
         android:textAppearance="?android:attr/textAppearanceMedium" />
+
     <TextView
         android:id="@+id/deliveryPointCommentTitle"
         android:layout_width="match_parent"
@@ -118,7 +135,7 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/deliveryPointCommentTitle"
-        android:text="%Delivery Point Comment%"
+        android:text="@string/placeholder_delivery_point_comments"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </RelativeLayout>

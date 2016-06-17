@@ -9,7 +9,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:gravity="center"
-        android:text="%Id%"
+        android:text="@string/placeholder_id"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
@@ -26,7 +26,7 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:gravity="center"
-            android:text="%Delivery date%"
+            android:text="@string/placeholder_delivery_date"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
@@ -34,7 +34,7 @@
             android:layout_width="wrap_content"
             android:layout_height="30dp"
             android:gravity="center"
-            android:text="%Delivery shift%"
+            android:text="@string/placeholder_delivery_shift"
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </LinearLayout>
 
@@ -50,7 +50,7 @@
         android:layout_toRightOf="@+id/linearLayout"
         android:layout_toEndOf="@+id/linearLayout"
         android:gravity="center"
-        android:text="%Forwarder Name%"
+        android:text="@string/placeholder_forwarder_name"
         android:textColor="#000000"
         android:textSize="18sp" />
 

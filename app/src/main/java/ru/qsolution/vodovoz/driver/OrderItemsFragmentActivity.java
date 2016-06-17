@@ -14,8 +14,6 @@ public class OrderItemsFragmentActivity extends Fragment {
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String SERIALIZED_ORDER = "serialized_order";
 
-    private Order order;
-
     public static OrderItemsFragmentActivity newInstance(int sectionNumber, Order order) {
         OrderItemsFragmentActivity fragment = new OrderItemsFragmentActivity();
         Bundle args = new Bundle();
@@ -31,7 +29,7 @@ public class OrderItemsFragmentActivity extends Fragment {
         ListView orderItemsListView = (ListView) rootView.findViewById(R.id.orderItemsListView);
         ListView orderEquipmentListView = (ListView) rootView.findViewById(R.id.orderEquipmentListView);
 
-        order = (Order) getArguments().getSerializable(SERIALIZED_ORDER);
+        Order order = (Order) getArguments().getSerializable(SERIALIZED_ORDER);
 
         if (order != null) {
             ArrayAdapter<String> itemsAdapter;

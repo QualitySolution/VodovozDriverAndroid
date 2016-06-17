@@ -20,7 +20,7 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
  */
 
 public class CheckAuthTask extends AsyncTask<String, Void, AsyncTaskResult<Boolean>> {
-    private List<IAsyncTaskListener<AsyncTaskResult<Boolean>>> listeners = new ArrayList<>();
+    private final List<IAsyncTaskListener<AsyncTaskResult<Boolean>>> listeners = new ArrayList<>();
 
     public void addListener(IAsyncTaskListener<AsyncTaskResult<Boolean>> toAdd) {
         listeners.add(toAdd);

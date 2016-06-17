@@ -3,13 +3,10 @@ package ru.qsolution.vodovoz.driver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Color;
 import android.net.Uri;
-import android.opengl.Visibility;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.text.Html;
-import android.text.Spanned;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,18 +67,26 @@ public class OrderInfoFragmentActivity extends Fragment {
                 deliveryPointComment.setVisibility(View.GONE);
                 deliveryPointCommentTitle.setVisibility(View.GONE);
             } else {
-                deliveryPointComment.setText(order.OrderComment);
+                deliveryPointComment.setText(order.DeliveryPointComment);
             }
 
             Spinner spinner = (Spinner) rootView.findViewById(R.id.orderStatusSpinner);
-
-            String[] array = getActivity().getResources().getStringArray(R.array.order_status_array);
-            ArrayAdapter<String> adapter = new OrderStatusAdapter(getActivity(), array);
-            spinner.setAdapter(adapter);
-            int position = adapter.getPosition(order.RouteListItemStatus);
-            spinner.setSelection(position);
-
-
+            TextView statusTextView = (TextView) rootView.findViewById(R.id.orderStatusTextView);
+            if (order.RouteListItemStatus.equals("Опоздали") || order.RouteListItemStatus.equals("Отмена клиентом")) {
+                spinner.setVisibility(View.GONE);
+                statusTextView.setText(order.RouteListItemStatus);
+                switch (order.RouteListItemStatus) {
+                    case "Отмена клиентом": statusTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.grey)); break;
+                    case "Опоздали": statusTextView.setTextColor(ContextCompat.getColor(getContext(), R.color.red)); break;
+                }
+            } else {
+                statusTextView.setVisibility(View.GONE);
+                String[] array = getActivity().getResources().getStringArray(R.array.order_status_array);
+                ArrayAdapter<String> adapter = new OrderStatusAdapter(getActivity(), array);
+                spinner.setAdapter(adapter);
+                int position = adapter.getPosition(order.RouteListItemStatus);
+                spinner.setSelection(position);
+            }
 
             //Setting up Get Route button
             if (order.Latitude != null && order.Longitude != null) {

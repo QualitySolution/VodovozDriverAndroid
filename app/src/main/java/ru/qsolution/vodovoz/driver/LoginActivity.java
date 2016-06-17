@@ -22,9 +22,8 @@ import ru.qsolution.vodovoz.driver.AsyncTasks.*;
  */
 
 public class LoginActivity extends AppCompatActivity {
-    EditText usernameInput;
-    EditText passwordInput;
-    Button loginButton;
+    private EditText usernameInput;
+    private EditText passwordInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        loginButton = (Button) findViewById(R.id.loginButton);
+        Button loginButton = (Button) findViewById(R.id.loginButton);
         usernameInput = (EditText) findViewById(R.id.loginInput);
         passwordInput = (EditText) findViewById(R.id.passwordInput);
 
@@ -75,8 +74,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private class LoginListener implements IAsyncTaskListener<AsyncTaskResult<String>> {
-        private Context context;
-        private SharedPreferences sharedPref;
+        private final Context context;
+        private final SharedPreferences sharedPref;
 
         public LoginListener(Context context, SharedPreferences sharedPref) {
             this.context = context;
@@ -114,8 +113,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private class CheckAuthListener implements IAsyncTaskListener<AsyncTaskResult<Boolean>> {
-        private Context context;
-        private SharedPreferences sharedPref;
+        private final Context context;
+        private final SharedPreferences sharedPref;
 
         public CheckAuthListener(Context context, SharedPreferences sharedPref) {
             this.context = context;

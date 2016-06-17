@@ -4,7 +4,6 @@
     <string name="login">Войти</string>
     <string name="login_hint">Логин</string>
     <string name="password_hint">Пароль</string>
-    <string name="authorization_in_progress">Авторизация&#8230;</string>
     <string name="authorization_failed">Ошибка авторизации</string>
     <string name="orders_activity_title">Список заказов</string>
 
@@ -15,7 +14,6 @@
     <string name="delivery_point">Точка доставки</string>
     <string name="delivery_time">Время доставки:</string>
     <string name="other_contacts">Телефоны компании</string>
-    <string name="call">Позвонить</string>
     <string name="order_items">Товары</string>
     <string name="order_equipment">Оборудование</string>
 
@@ -29,7 +27,23 @@
     <string-array name="order_status_array">
         <item name="Completed">Выполнен</item>
         <item name="EnRoute">В пути</item>
-        <item name="Canceled">Отмена клиентом</item>
-        <item name="Overdue">Опоздали</item>
     </string-array>
+
+    <!--Placeholders -->
+    <string name="placeholder_id">%ID%</string>
+    <string name="placeholder_order_number">%ORDER NUMBER%</string>
+    <string name="placeholder_client_name">%CLIENT NAME%</string>
+    <string name="placeholder_contact_person">%CONTACT PERSON%</string>
+    <string name="placeholder_delivery_date">%DELIVERY DATE%</string>
+    <string name="placeholder_client_address">%CLIENT ADDRESS%</string>
+    <string name="placeholder_delivery_shift">%DELIVERY SHIFT%</string>
+    <string name="placeholder_contact_phone">%CONTACT_PHONE%</string>
+    <string name="placeholder_order_status">%ORDER STATUS%</string>
+    <string name="placeholder_forwarder_name">%FORWARDER NAME%</string>
+    <string name="placeholder_delivery_time">%DELIVERY TIME%</string>
+    <string name="placeholder_order_comments">%ORDER COMMENTS%</string>
+    <string name="placeholder_delivery_point_comments">%DELIVERY POINT COMMENTS%</string>
+
+    <!--Content Descriptions-->
+    <string name="content_description_logo">Логотип "Веселый Водовоз"</string>
 </resources>
