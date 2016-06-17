@@ -26,6 +26,7 @@ import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 public class TabbedOrderDetailedActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<Order>> {
     private SharedPreferences sharedPref;
     private AsyncTaskResult<Order> result;
+    public Boolean needUpdate = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,5 +146,14 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity implements IA
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (needUpdate) {
+            Intent intent = new Intent();
+            setResult(RESULT_OK, intent);
+        }
+        super.onBackPressed();
     }
 }

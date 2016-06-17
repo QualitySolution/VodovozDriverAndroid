@@ -154,6 +154,7 @@ public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskLis
         try {
             if (result.getException() == null && result.getResult()) {
                 order.RouteListItemStatus = newStatus;
+                ((TabbedOrderDetailedActivity)getActivity()).needUpdate = true;
             } else {
                 int position = adapter.getPosition(order.RouteListItemStatus);
                 spinner.setSelection(position);

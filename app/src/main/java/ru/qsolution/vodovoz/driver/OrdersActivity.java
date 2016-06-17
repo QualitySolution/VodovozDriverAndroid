@@ -66,7 +66,8 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
                         ShortOrder order = adapter.getItem(position);
                         Intent intent = new Intent(OrdersActivity.this, TabbedOrderDetailedActivity.class);
                         intent.putExtra("OrderId", order.Id);
-                        startActivity(intent);
+                       // startActivity(intent);
+                        startActivityForResult(intent, 1);
                     }
                 });
             } else if (result.getException() == null && (result.getResult() == null || result.getResult().size() == 0)) {
@@ -81,6 +82,17 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
         } catch (Exception e) {
             if (BuildConfig.DEBUG)
                 e.printStackTrace();
+        }
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                GetOrdersTask task = new GetOrdersTask(this);
+                task.addListener(this);
+                task.execute(sharedPref.getString("Authkey", ""), routeListId);
+            }
         }
     }
 
