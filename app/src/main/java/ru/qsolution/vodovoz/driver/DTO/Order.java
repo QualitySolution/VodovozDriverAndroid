@@ -4,17 +4,21 @@ import org.ksoap2.serialization.SoapObject;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import ru.qsolution.vodovoz.driver.Workers.SoapWorker;
 
 /**
  * Created by Andrei on 08.06.16.
  */
+
 public class Order implements Serializable {
-    public static final String STATUS_EN_ROUTE = "EnRoute";
-    public static final String STATUS_COMPLETED = "Completed";
-    public static final String STATUS_CANCELED = "Canceled";
-    public static final String STATUS_OVERDUE = "Overdue";
+    public static final HashMap<String, String> ORDER_STATUS = new HashMap<String,String>() {{
+        put("В пути", "EnRoute");
+        put("Выполнен", "Completed");
+        put("Отмена клиентом", "Canceled");
+        put("Опоздали", "Overdue");
+    }};
 
     public final String Id;
     public final String Title;

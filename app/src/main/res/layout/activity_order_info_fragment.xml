@@ -138,4 +138,5 @@
         android:text="@string/placeholder_delivery_point_comments"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+
 </RelativeLayout>

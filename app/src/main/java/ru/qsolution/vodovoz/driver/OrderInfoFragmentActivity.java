@@ -1,6 +1,8 @@
 package ru.qsolution.vodovoz.driver;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
@@ -10,21 +12,29 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import ru.qsolution.vodovoz.driver.ArrayAdapters.OrderStatusAdapter;
+import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
+import ru.qsolution.vodovoz.driver.AsyncTasks.ChangeOrderStatusTask;
+import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.Order;
 
-public class OrderInfoFragmentActivity extends Fragment {
+public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskListener<AsyncTaskResult<Boolean>>{
     private static final String ARG_SECTION_NUMBER = "section_number";
     private static final String SERIALIZED_ORDER = "serialized_order";
 
     private Order order;
+    private Spinner spinner;
+    private ArrayAdapter<String> adapter;
+    private String newStatus;
 
     public static OrderInfoFragmentActivity newInstance(int sectionNumber, Order order) {
         OrderInfoFragmentActivity fragment = new OrderInfoFragmentActivity();
@@ -70,7 +80,7 @@ public class OrderInfoFragmentActivity extends Fragment {
                 deliveryPointComment.setText(order.DeliveryPointComment);
             }
 
-            Spinner spinner = (Spinner) rootView.findViewById(R.id.orderStatusSpinner);
+            spinner = (Spinner) rootView.findViewById(R.id.orderStatusSpinner);
             TextView statusTextView = (TextView) rootView.findViewById(R.id.orderStatusTextView);
             if (order.RouteListItemStatus.equals("Опоздали") || order.RouteListItemStatus.equals("Отмена клиентом")) {
                 spinner.setVisibility(View.GONE);
@@ -82,10 +92,29 @@ public class OrderInfoFragmentActivity extends Fragment {
             } else {
                 statusTextView.setVisibility(View.GONE);
                 String[] array = getActivity().getResources().getStringArray(R.array.order_status_array);
-                ArrayAdapter<String> adapter = new OrderStatusAdapter(getActivity(), array);
+                adapter = new OrderStatusAdapter(getActivity(), array);
                 spinner.setAdapter(adapter);
                 int position = adapter.getPosition(order.RouteListItemStatus);
                 spinner.setSelection(position);
+                spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        Object item = parent.getItemAtPosition(position);
+                        if (item instanceof String) {
+                            newStatus = item.toString();
+                            if (order.RouteListItemStatus.equals(newStatus))
+                                return;
+                            ChangeOrderStatusTask task = new ChangeOrderStatusTask(getActivity());
+                            task.addListener(OrderInfoFragmentActivity.this);
+                            SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+                            task.execute(sharedPref.getString("Authkey", ""), order.Id, Order.ORDER_STATUS.get(newStatus));
+                        }
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+                    }
+                });
             }
 
             //Setting up Get Route button
@@ -118,5 +147,29 @@ public class OrderInfoFragmentActivity extends Fragment {
         }
 
         return rootView;
+    }
+
+    @Override
+    public void AsyncTaskCompleted(AsyncTaskResult<Boolean> result) {
+        try {
+            if (result.getException() == null && result.getResult()) {
+                order.RouteListItemStatus = newStatus;
+            } else {
+                int position = adapter.getPosition(order.RouteListItemStatus);
+                spinner.setSelection(position);
+
+                if (result.getException() == null && !result.getResult()) {
+                    Toast toast = Toast.makeText(getContext(), "При изменении статуса произошла ошибка.", Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+                    Toast toast = Toast.makeText(getContext(), "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                    toast.show();
+                    throw result.getException();
+                }
+            }
+        } catch (Exception e) {
+            if (BuildConfig.DEBUG)
+                e.printStackTrace();
+        }
     }
 }
