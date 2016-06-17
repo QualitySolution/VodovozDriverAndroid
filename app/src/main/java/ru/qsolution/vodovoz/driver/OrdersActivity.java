@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.menu.ActionMenuItemView;
@@ -21,13 +22,15 @@ import java.util.ArrayList;
 
 import ru.qsolution.vodovoz.driver.ArrayAdapters.OrdersAdapter;
 import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
+import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrderDetailedTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrdersTask;
+import ru.qsolution.vodovoz.driver.AsyncTasks.GetRouteListsTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.ShortOrder;
 import ru.qsolution.vodovoz.driver.Services.LocationService;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
-public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>> {
+public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>>, SwipeRefreshLayout.OnRefreshListener {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 42;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 24;
 
@@ -36,6 +39,7 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     private String routeListId;
     private Context context;
     private ListView list;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,8 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
             GetOrdersTask task = new GetOrdersTask(this);
             task.addListener(this);
             task.execute(sharedPref.getString("Authkey", ""), routeListId);
+            swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+            swipeRefreshLayout.setOnRefreshListener(this);
         }
     }
 
@@ -83,6 +89,7 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
             if (BuildConfig.DEBUG)
                 e.printStackTrace();
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -197,5 +204,13 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
                 }
             }
         }
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(true);
+        GetOrdersTask task = new GetOrdersTask(this);
+        task.addListener(this);
+        task.execute(sharedPref.getString("Authkey", ""), routeListId);
     }
 }

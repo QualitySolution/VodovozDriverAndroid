@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    android:versionName="1.0.0"
+    android:versionCode="1"
     package="ru.qsolution.vodovoz.driver">
+
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -27,10 +30,12 @@
         </activity>
         <activity
             android:name=".OrdersActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name"/>
         <activity
             android:name=".RouteListsActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"/>
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/app_name"/>
         <activity
             android:name=".TabbedOrderDetailedActivity"
             android:label="@string/app_name"

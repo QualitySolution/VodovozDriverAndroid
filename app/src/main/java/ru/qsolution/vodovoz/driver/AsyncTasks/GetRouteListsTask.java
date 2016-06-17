@@ -2,6 +2,7 @@ package ru.qsolution.vodovoz.driver.AsyncTasks;
 
 import android.app.Activity;
 import android.os.AsyncTask;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -27,8 +28,10 @@ import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<ArrayList<RouteList>>> {
     private final List<IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>>> listeners = new ArrayList<>();
     private final LinearLayout linlaHeaderProgress;
+    private final SwipeRefreshLayout swipeRefreshLayout;
 
     public GetRouteListsTask(Activity activity) {
+        swipeRefreshLayout = (SwipeRefreshLayout) activity.findViewById(R.id.swiperefresh);
         linlaHeaderProgress = (LinearLayout) activity.findViewById(R.id.linlaHeaderProgress);
     }
 
@@ -38,7 +41,8 @@ public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<A
 
     @Override
     protected void onPreExecute() {
-        linlaHeaderProgress.setVisibility(View.VISIBLE);
+        if (!swipeRefreshLayout.isRefreshing())
+            linlaHeaderProgress.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -85,6 +89,7 @@ public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<A
         for (IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>> listener : listeners) {
             listener.AsyncTaskCompleted(result);
         }
-        linlaHeaderProgress.setVisibility(View.GONE);
+        if (!swipeRefreshLayout.isRefreshing())
+            linlaHeaderProgress.setVisibility(View.GONE);
     }
 }

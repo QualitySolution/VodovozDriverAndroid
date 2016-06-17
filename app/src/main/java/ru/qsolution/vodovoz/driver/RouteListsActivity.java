@@ -3,6 +3,7 @@ package ru.qsolution.vodovoz.driver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,11 +23,12 @@ import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.RouteList;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
-public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>>{
+public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>>, SwipeRefreshLayout.OnRefreshListener {
     private RouteListAdapter adapter;
     private SharedPreferences sharedPref;
     private ListView list;
     private Context context;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,10 +57,19 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
                 return;
             }
         }
-
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        swipeRefreshLayout.setOnRefreshListener(this);
         GetRouteListsTask task = new GetRouteListsTask(this);
         task.addListener(this);
         task.execute(sharedPref.getString("Authkey", ""));
+    }
+
+    @Override
+    protected void onResume() {
+        GetRouteListsTask task = new GetRouteListsTask(this);
+        task.addListener(this);
+        task.execute(sharedPref.getString("Authkey", ""));
+        super.onResume();
     }
 
     @Override
@@ -88,6 +99,7 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
             if (BuildConfig.DEBUG)
                 e.printStackTrace();
         }
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -124,5 +136,13 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onRefresh() {
+        swipeRefreshLayout.setRefreshing(true);
+        GetRouteListsTask task = new GetRouteListsTask(RouteListsActivity.this);
+        task.addListener(RouteListsActivity.this);
+        task.execute(sharedPref.getString("Authkey", ""));
     }
 }

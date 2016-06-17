@@ -22,6 +22,8 @@
     <string name="menu_item_logout">Смена пользователя</string>
     <string name="menu_item_start_route_list">Принять</string>
 
+    <string name="wait_for_status_change">Изменение статуса. Пожалуйста, подождите.</string>
+
     <string name="auth_file_key">ru.qsolution.vodovoz.driver.auth</string>
 
     <string-array name="order_status_array">
@@ -46,4 +48,10 @@
 
     <!--Content Descriptions-->
     <string name="content_description_logo">Логотип "Веселый Водовоз"</string>
+
+    <!--Route list statuses. Do NOT translate-->
+    <string name="order_status_en_route">В пути</string>
+    <string name="order_status_canceled">Отмена клиентом</string>
+    <string name="order_status_overdue">Опоздали</string>
+    <string name="order_status_completed">Завершен</string>
 </resources>

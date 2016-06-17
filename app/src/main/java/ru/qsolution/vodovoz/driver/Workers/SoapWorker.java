@@ -23,6 +23,5 @@ public class SoapWorker {
         } catch (RuntimeException e) {
             return EMPTY_STRING;
         }
-
     }
 }
