@@ -12,7 +12,6 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,12 +44,12 @@ public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<A
     @Override
     protected AsyncTaskResult<ArrayList<RouteList>> doInBackground(String... args) {
         AsyncTaskResult<ArrayList<RouteList>> result;
-        String METHOD_NAME = "GetRouteLists";
+        String METHOD_NAME = NetworkWorker.METHOD_GET_ROUTE_LISTS;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
 
-        SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("authKey", args[0]);
+        SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
+        request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0]);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 

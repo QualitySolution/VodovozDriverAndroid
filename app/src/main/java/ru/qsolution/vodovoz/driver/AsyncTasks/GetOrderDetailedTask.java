@@ -12,7 +12,6 @@ import org.ksoap2.transport.HttpTransportSE;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,13 +44,13 @@ public class GetOrderDetailedTask extends AsyncTask<String, Void, AsyncTaskResul
     @Override
     protected AsyncTaskResult<Order> doInBackground(String... args) {
         AsyncTaskResult<Order> result;
-        String METHOD_NAME = "GetOrderDetailed";
+        String METHOD_NAME = NetworkWorker.METHOD_GET_ORDER_DETAILED;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
 
-        SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("authKey", args[0]);
-        request.addProperty("orderId", args[1]);
+        SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
+        request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0]);
+        request.addProperty(NetworkWorker.FIELD_ORDER_ID, args[1]);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 

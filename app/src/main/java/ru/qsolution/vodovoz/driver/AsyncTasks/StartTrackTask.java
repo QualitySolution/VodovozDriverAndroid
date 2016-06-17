@@ -30,13 +30,13 @@ public class StartTrackTask extends AsyncTask<String, Void, AsyncTaskResult<Inte
     @Override
     protected AsyncTaskResult<Integer> doInBackground(String... args) {
         AsyncTaskResult<Integer> result;
-        String METHOD_NAME = "StartOrResumeTrack";
+        String METHOD_NAME = NetworkWorker.METHOD_START_TRACK;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
 
-        SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("authKey", args[0]);
-        request.addProperty("routeListId", args[1]);
+        SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
+        request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0]);
+        request.addProperty(NetworkWorker.FIELD_ROUTE_LIST_ID, args[1]);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 

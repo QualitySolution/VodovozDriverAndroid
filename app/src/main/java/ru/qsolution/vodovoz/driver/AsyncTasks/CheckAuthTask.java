@@ -30,12 +30,12 @@ public class CheckAuthTask extends AsyncTask<String, Void, AsyncTaskResult<Boole
     @Override
     protected AsyncTaskResult<Boolean> doInBackground(String... args) {
         AsyncTaskResult<Boolean> result;
-        String METHOD_NAME = "CheckAuth";
+        String METHOD_NAME = NetworkWorker.METHOD_CHECK_AUTH;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
 
-        SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("authKey", args[0]);
+        SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
+        request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0]);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 

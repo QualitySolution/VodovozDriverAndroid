@@ -30,12 +30,12 @@ public class LoginTask extends AsyncTask<String, Void, AsyncTaskResult<String>> 
     @Override
     protected AsyncTaskResult<String> doInBackground(String... args) {
         AsyncTaskResult<String> result;
-        String METHOD_NAME = "Auth";
+        String METHOD_NAME = NetworkWorker.METHOD_LOGIN;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
-        SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("login", args[0]);
-        request.addProperty("password", args[1]);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
+        SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
+        request.addProperty(NetworkWorker.FIELD_LOGIN, args[0]);
+        request.addProperty(NetworkWorker.FIELD_PASSWORD, args[1]);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 

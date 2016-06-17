@@ -32,21 +32,21 @@ public class SendCoordinatesTask extends AsyncTask<Object, Void, AsyncTaskResult
     @Override
     protected AsyncTaskResult<Boolean> doInBackground(Object... args) {
         AsyncTaskResult<Boolean> result;
-        String METHOD_NAME = "SendCoordinates";
+        String METHOD_NAME = NetworkWorker.METHOD_SEND_COORDINATES;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
 
-        SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("authKey", args[0].toString());
-        request.addProperty("trackId", args[1].toString());
+        SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
+        request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0].toString());
+        request.addProperty(NetworkWorker.FIELD_TRACK_ID, args[1].toString());
 
 
         List<TrackPoint> list = (List<TrackPoint>) args[2];
-        SoapObject soapDetails = new SoapObject(NetworkWorker.Namespace, "TrackPointList");
+        SoapObject soapDetails = new SoapObject(NetworkWorker.NAMESPACE, NetworkWorker.FIELD_TRACK_POINT_LIST);
 
         for (int i = 0; i < list.size(); i++) {
             PropertyInfo inf = new PropertyInfo();
-            inf.setName("TrackPoint");
+            inf.setName(NetworkWorker.FIELD_TRACK_POINT);
             inf.setValue(list.get(i));
             inf.setType(list.get(i).getClass());
             soapDetails.addProperty(inf);
@@ -55,8 +55,8 @@ public class SendCoordinatesTask extends AsyncTask<Object, Void, AsyncTaskResult
         request.addSoapObject(soapDetails);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
-        envelope.addMapping(NetworkWorker.Namespace, "TrackPoint", list.get(0).getClass());
-        envelope.addMapping(NetworkWorker.Namespace, "TrackPointList", list.getClass());
+        envelope.addMapping(NetworkWorker.NAMESPACE, NetworkWorker.FIELD_TRACK_POINT, list.get(0).getClass());
+        envelope.addMapping(NetworkWorker.NAMESPACE, NetworkWorker.FIELD_TRACK_POINT_LIST, list.getClass());
 
         ArrayList<HeaderProperty> headerPropertyArrayList = new ArrayList<>();
         headerPropertyArrayList.add(new HeaderProperty("Connection", "close"));

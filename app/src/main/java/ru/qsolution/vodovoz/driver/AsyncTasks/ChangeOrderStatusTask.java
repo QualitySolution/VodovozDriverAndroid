@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.qsolution.vodovoz.driver.R;
 import ru.qsolution.vodovoz.driver.Workers.NetworkWorker;
 
 /**
@@ -37,21 +38,21 @@ public class ChangeOrderStatusTask extends AsyncTask<String, Void, AsyncTaskResu
 
     @Override
     protected void onPreExecute() {
-        progressDialog = ProgressDialog.show(activity, "", "Изменение статуса. Пожалуйста, подождите.", true);
+        progressDialog = ProgressDialog.show(activity, "", activity.getString(R.string.wait_for_status_change), true);
     }
 
 
     @Override
     protected AsyncTaskResult<Boolean> doInBackground(String... args) {
         AsyncTaskResult<Boolean> result;
-        String METHOD_NAME = "ChangeOrderStatus";
+        String METHOD_NAME = NetworkWorker.METHOD_CHANGE_ORDER_STATUS;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
 
-        SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("authKey", args[0]);
-        request.addProperty("orderId", args[1]);
-        request.addProperty("status", args[2]);
+        SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
+        request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0]);
+        request.addProperty(NetworkWorker.FIELD_ORDER_ID, args[1]);
+        request.addProperty(NetworkWorker.FIELD_STATUS, args[2]);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 

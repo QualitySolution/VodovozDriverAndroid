@@ -30,12 +30,12 @@ public class CheckAppVersionTask extends AsyncTask<Integer, Void, AsyncTaskResul
     @Override
     protected AsyncTaskResult<Boolean> doInBackground(Integer... args) {
         AsyncTaskResult<Boolean> result;
-        String METHOD_NAME = "CheckAppCodeVersion";
+        String METHOD_NAME = NetworkWorker.METHOD_CHECK_APP_VERSION;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ServiceUrl);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
 
-        SoapObject request = new SoapObject(NetworkWorker.Namespace, METHOD_NAME);
-        request.addProperty("versionCode", args[0]);
+        SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
+        request.addProperty(NetworkWorker.FIELD_VERSION_CODE, args[0]);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 
