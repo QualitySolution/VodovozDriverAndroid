@@ -32,27 +32,48 @@ public class RouteListAdapter extends ArrayAdapter<RouteList> {
 
     }
 
+    class RouteListHolder {
+        TextView routeListNumber;
+        TextView routeListDate;
+        TextView routeListDeliveryShift;
+        TextView routeListForwarder;
+
+        public RouteListHolder (View view) {
+            routeListNumber = (TextView) view.findViewById(R.id.routeListNumber);
+            routeListDate = (TextView) view.findViewById(R.id.routeListDate);
+            routeListDeliveryShift = (TextView) view.findViewById(R.id.routeListDeliveryShift);
+            routeListForwarder = (TextView) view.findViewById(R.id.routeListForwarder);
+        }
+    }
+
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
-        View rowView = inflater.inflate(R.layout.route_list_item, null, true);
-        TextView routeListNumber = (TextView) rowView.findViewById(R.id.routeListNumber);
-        TextView routeListDate = (TextView) rowView.findViewById(R.id.routeListDate);
-        TextView routeListDeliveryShift = (TextView) rowView.findViewById(R.id.routeListDeliveryShift);
-        TextView routeListForwarder = (TextView) rowView.findViewById(R.id.routeListForwarder);
+        View view = convertView;
+        RouteListHolder rl;
+
+        if (convertView == null) {
+            view = inflater.inflate(R.layout.route_list_item, null);
+            rl = new RouteListHolder(view);
+            view.setTag(rl);
+        } else {
+            rl = (RouteListHolder)view.getTag();
+        }
 
         DateFormat df = new SimpleDateFormat("dd.MM.yyyy");
 
-        routeListNumber.setText(routeLists.get(position).Id);
-        routeListDate.setText(df.format(routeLists.get(position).Date));
-        routeListDeliveryShift.setText(routeLists.get(position).DeliveryShift);
-        routeListForwarder.setText(routeLists.get(position).Forwarder);
-
+        rl.routeListNumber.setText(routeLists.get(position).Id);
+        rl.routeListDate.setText(df.format(routeLists.get(position).Date));
+        rl.routeListDeliveryShift.setText(routeLists.get(position).DeliveryShift);
+        if (routeLists.get(position).Forwarder.equals("anyType{}"))
+            rl.routeListForwarder.setText("Без экспедитора");
+        else
+            rl.routeListForwarder.setText(routeLists.get(position).Forwarder);
 
         if (routeLists.get(position).Id.equals(LocationService.RouteListId)) {
-            rowView.setBackgroundColor(Color.parseColor("#BAE8BA"));
+            view.setBackgroundColor(Color.parseColor("#BAE8BA"));
         }
 
-        return rowView;
+        return view;
     }
 }

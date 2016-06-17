@@ -3,6 +3,7 @@ package ru.qsolution.vodovoz.driver.ArrayAdapters;
 import android.app.Activity;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,10 @@ import ru.qsolution.vodovoz.driver.DTO.ShortOrder;
 import ru.qsolution.vodovoz.driver.R;
 
 /**
- * Created by Andrei on 09.06.16.
+ * Created by Andrei Vinogradov on 09.06.16.
+ * (c) Quality Solution Ltd.
  */
+
 public class OrdersAdapter extends ArrayAdapter<ShortOrder> {
 
     private final Activity context;
@@ -28,29 +31,56 @@ public class OrdersAdapter extends ArrayAdapter<ShortOrder> {
         this.ordersList = ordersList;
     }
 
+    class OrderViewHolder {
+        TextView OrderNumber;
+        TextView OrderStatus;
+        TextView OrderDeliveryTime;
+        TextView OrderClient;
+        TextView OrderAddress;
+
+        public OrderViewHolder(View view) {
+            OrderNumber = (TextView) view.findViewById(R.id.orderNumber);
+            OrderStatus = (TextView) view.findViewById(R.id.orderStatus);
+            OrderDeliveryTime = (TextView) view.findViewById(R.id.orderDeliveryTime);
+            OrderClient = (TextView) view.findViewById(R.id.orderClient);
+            OrderAddress = (TextView) view.findViewById(R.id.orderAddress);
+        }
+    }
+
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
+    public View getView(int position, View convertView, ViewGroup parent) {
         LayoutInflater inflater = context.getLayoutInflater();
-        View rowView= inflater.inflate(R.layout.order_item, null, true);
-        TextView orderNumber = (TextView) rowView.findViewById(R.id.orderNumber);
-        TextView orderStatus = (TextView) rowView.findViewById(R.id.orderStatus);
-        TextView orderDeliveryTime = (TextView) rowView.findViewById(R.id.orderDeliveryTime);
-        TextView orderClient = (TextView) rowView.findViewById(R.id.orderClient);
-        TextView orderAddress = (TextView) rowView.findViewById(R.id.orderAddress);
+        View view = convertView;
+        OrderViewHolder vh;
+        if (convertView == null) {
+            view = inflater.inflate(R.layout.order_item, null);
+            vh = new OrderViewHolder(view);
+            view.setTag(vh);
+        } else {
+            vh = (OrderViewHolder) view.getTag();
+        }
 
-
-        orderNumber.setText(ordersList.get(position).Id);
-        orderStatus.setText(ordersList.get(position).OrderStatus);
-        orderDeliveryTime.setText(ordersList.get(position).DeliverySchedule);
-        orderClient.setText(ordersList.get(position).Counterparty);
-        orderAddress.setText(ordersList.get(position).Address);
+        vh.OrderNumber.setText(ordersList.get(position).Id);
+        vh.OrderStatus.setText(ordersList.get(position).OrderStatus);
+        vh.OrderDeliveryTime.setText(ordersList.get(position).DeliverySchedule);
+        vh.OrderClient.setText(ordersList.get(position).Counterparty);
+        vh.OrderAddress.setText(ordersList.get(position).Address);
 
         switch (ordersList.get(position).OrderStatus) {
-            case "Выполнен": orderStatus.setTextColor(ContextCompat.getColor(context, R.color.green)); break;
-            case "Отмена клиентом": orderStatus.setTextColor(ContextCompat.getColor(context, R.color.grey)); break;
-            case "Опоздали": orderStatus.setTextColor(ContextCompat.getColor(context, R.color.red)); break;
-            default: orderStatus.setTextColor(Color.BLACK); break;
+            case "Выполнен":
+                vh.OrderStatus.setTextColor(ContextCompat.getColor(context, R.color.green));
+                break;
+            case "Отмена клиентом":
+                vh.OrderStatus.setTextColor(ContextCompat.getColor(context, R.color.grey));
+                break;
+            case "Опоздали":
+                vh.OrderStatus.setTextColor(ContextCompat.getColor(context, R.color.red));
+                break;
+            default:
+                vh.OrderStatus.setTextColor(Color.BLACK);
+                break;
         }
-        return rowView;
+
+        return view;
     }
 }

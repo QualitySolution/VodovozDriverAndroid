@@ -30,28 +30,42 @@ public class OrderStatusAdapter extends ArrayAdapter<String> {
         this.statusArray = statusArray;
     }
 
+    class OrderStatusHolder {
+        TextView status;
+
+        public OrderStatusHolder (View view) {
+            status = (TextView) view.findViewById(R.id.spinner_item_text);
+        }
+    }
+
     @Override
-    public View getView(int position, View view, ViewGroup parent) {
-        LayoutInflater inflater = context.getLayoutInflater();
-        View rowView= inflater.inflate(R.layout.spinner_item, null, true);
-        prepareTextView(position, rowView);
-        return rowView;
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return prepareView(position, convertView);
     }
 
     @Override
     public View getDropDownView(int position, View convertView, ViewGroup parent)
     {
-        View view = super.getView(position, convertView, parent);
-        prepareTextView(position, view);
-        return view;
+        return prepareView(position, convertView);
     }
 
-    private void prepareTextView(int position, View view ) {
-        TextView textView = (TextView) view.findViewById(R.id.spinner_item_text);
-        textView.setText(statusArray[position]);
-        switch (statusArray[position]) {
-            case "Выполнен": textView.setTextColor(ContextCompat.getColor(context, R.color.green)); break;
-            default: textView.setTextColor(Color.BLACK); break;
+    private View prepareView(int position, View convertView) {
+        LayoutInflater inflater = context.getLayoutInflater();
+        View view = convertView;
+        OrderStatusHolder sh;
+
+        if (convertView == null) {
+            view = inflater.inflate(R.layout.spinner_item, null);
+            sh = new OrderStatusHolder(view);
+            view.setTag(sh);
+        } else {
+            sh = (OrderStatusHolder)view.getTag();
         }
+        sh.status.setText(statusArray[position]);
+        switch (statusArray[position]) {
+            case "Выполнен": sh.status.setTextColor(ContextCompat.getColor(context, R.color.green)); break;
+            default: sh.status.setTextColor(Color.BLACK); break;
+        }
+        return view;
     }
 }
