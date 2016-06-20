@@ -1,6 +1,8 @@
 package ru.qsolution.vodovoz.driver;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -10,12 +12,16 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -109,10 +115,72 @@ public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskLis
                             newStatus = item.toString();
                             if (order.RouteListItemStatus.equals(newStatus))
                                 return;
-                            ChangeOrderStatusTask task = new ChangeOrderStatusTask(getActivity());
-                            task.addListener(OrderInfoFragmentActivity.this);
-                            SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
-                            task.execute(sharedPref.getString("Authkey", ""), order.Id, Order.ORDER_STATUS.get(newStatus));
+
+                            if (newStatus.equals("Выполнен")) {
+                                final Dialog dialog = new Dialog(getContext());
+                                dialog.setContentView(R.layout.bottles_dialog);
+                                dialog.setTitle("Закрытие заказа");
+
+                                final Button okBtn = (Button) dialog.findViewById(R.id.dialogButtonOK);
+                                final Button cancelBtn = (Button) dialog.findViewById(R.id.dialogButtonCancel);
+                                final EditText input = (EditText)dialog.findViewById(R.id.bottlesNumber);
+
+                                okBtn.setOnClickListener(
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                ChangeOrderStatusTask task = new ChangeOrderStatusTask(getActivity());
+                                                task.addListener(OrderInfoFragmentActivity.this);
+                                                SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+                                                task.execute(sharedPref.getString("Authkey", ""), order.Id, Order.ORDER_STATUS.get(newStatus), input.getText().toString());
+                                                dialog.dismiss();
+                                            }
+                                        }
+                                );
+                                cancelBtn.setOnClickListener(
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                dialog.cancel();
+                                            }
+                                        }
+                                );
+                                input.addTextChangedListener(new TextWatcher() {
+                                    @Override
+                                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                                    }
+
+                                    @Override
+                                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable s) {
+                                        if (TextUtils.isEmpty(s)) {
+                                            okBtn.setEnabled(false);
+                                        } else {
+                                            okBtn.setEnabled(true);
+                                        }
+
+                                    }
+                                });
+                                dialog.setOnCancelListener(
+                                        new DialogInterface.OnCancelListener() {
+                                            @Override
+                                            public void onCancel(DialogInterface dialog) {
+                                                int position = adapter.getPosition(order.RouteListItemStatus);
+                                                spinner.setSelection(position);
+                                            }
+                                        }
+                                );
+
+                                dialog.show();
+                            } else {
+                                ChangeOrderStatusTask task = new ChangeOrderStatusTask(getActivity());
+                                task.addListener(OrderInfoFragmentActivity.this);
+                                SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+                                task.execute(sharedPref.getString("Authkey", ""), order.Id, Order.ORDER_STATUS.get(newStatus));
+                            }
                         }
                     }
 

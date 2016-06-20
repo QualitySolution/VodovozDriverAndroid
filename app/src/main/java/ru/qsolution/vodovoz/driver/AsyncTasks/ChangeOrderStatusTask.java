@@ -53,6 +53,8 @@ public class ChangeOrderStatusTask extends AsyncTask<String, Void, AsyncTaskResu
         request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0]);
         request.addProperty(NetworkWorker.FIELD_ORDER_ID, Integer.parseInt(args[1]));
         request.addProperty(NetworkWorker.FIELD_STATUS, args[2]);
+        if (args.length > 3)
+            request.addProperty(NetworkWorker.FIELD_BOTTLES_RETURNED, Integer.parseInt(args[3]));
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 

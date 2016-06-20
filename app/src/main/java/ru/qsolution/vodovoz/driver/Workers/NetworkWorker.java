@@ -28,6 +28,7 @@ public class NetworkWorker {
     public static final String FIELD_AUTH_KEY = "authKey";
     public static final String FIELD_ORDER_ID = "orderId";
     public static final String FIELD_STATUS = "status";
+    public static final String FIELD_BOTTLES_RETURNED = "bottlesReturned";
     public static final String FIELD_VERSION_CODE = "versionCode";
     public static final String FIELD_ROUTE_LIST_ID = "routeListId";
     public static final String FIELD_LOGIN = "login";
