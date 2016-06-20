@@ -38,7 +38,7 @@ public class SendCoordinatesTask extends AsyncTask<Object, Void, AsyncTaskResult
 
         SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
         request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0].toString());
-        request.addProperty(NetworkWorker.FIELD_TRACK_ID, args[1].toString());
+        request.addProperty(NetworkWorker.FIELD_TRACK_ID, Integer.parseInt(args[1].toString()));
 
 
         List<TrackPoint> list = (List<TrackPoint>) args[2];

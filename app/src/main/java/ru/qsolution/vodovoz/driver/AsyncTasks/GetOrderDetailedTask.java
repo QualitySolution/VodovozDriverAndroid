@@ -50,7 +50,7 @@ public class GetOrderDetailedTask extends AsyncTask<String, Void, AsyncTaskResul
 
         SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
         request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0]);
-        request.addProperty(NetworkWorker.FIELD_ORDER_ID, args[1]);
+        request.addProperty(NetworkWorker.FIELD_ORDER_ID, Integer.parseInt(args[1]));
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 
