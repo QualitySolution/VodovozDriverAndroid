@@ -128,6 +128,7 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
     @Override
     public void onDestroy() {
         locationManager.removeUpdates(locationListener);
+        RouteListId = null;
         if (trackPoints.size() > 0) {
             new SendCoordinatesTask().execute(authKey, trackIdResult.getResult(), trackPoints);
         }

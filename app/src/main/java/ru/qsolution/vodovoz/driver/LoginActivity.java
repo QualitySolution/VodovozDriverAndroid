@@ -52,11 +52,6 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
         sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
         Bundle extras = getIntent().getExtras();
 
-        //Checking app API version
-        CheckAppVersionTask checkAppVersionTask = new CheckAppVersionTask();
-        checkAppVersionTask.addListener(this);
-        checkAppVersionTask.execute(BuildConfig.VERSION_CODE);
-
         //Checking if needed to close app
         if (extras != null) {
             if (extras.getBoolean("EXIT", false)) {
@@ -64,6 +59,11 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
                 return;
             }
         }
+
+        //Checking app API version
+        CheckAppVersionTask checkAppVersionTask = new CheckAppVersionTask();
+        checkAppVersionTask.addListener(this);
+        checkAppVersionTask.execute(BuildConfig.VERSION_CODE);
 
         //Authorization logic
         loginButton.setEnabled(false);

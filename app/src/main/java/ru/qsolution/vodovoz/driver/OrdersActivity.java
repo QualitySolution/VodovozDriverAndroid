@@ -2,11 +2,15 @@ package ru.qsolution.vodovoz.driver;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.view.menu.ActionMenuItemView;
@@ -72,7 +76,7 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
                         ShortOrder order = adapter.getItem(position);
                         Intent intent = new Intent(OrdersActivity.this, TabbedOrderDetailedActivity.class);
                         intent.putExtra("OrderId", order.Id);
-                       // startActivity(intent);
+                        // startActivity(intent);
                         startActivityForResult(intent, 1);
                     }
                 });
@@ -95,7 +99,7 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            if(resultCode == RESULT_OK){
+            if (resultCode == RESULT_OK) {
                 GetOrdersTask task = new GetOrdersTask(this);
                 task.addListener(this);
                 task.execute(sharedPref.getString("Authkey", ""), routeListId);
@@ -150,20 +154,33 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
             startActivity(i);
             finish();
         } else if (item.getItemId() == R.id.taskAcceptRouteListBtn) {
+            final LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
                 return super.onOptionsItemSelected(item);
             }
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION);
                 return super.onOptionsItemSelected(item);
             }
-
-            ServiceWorker.StopLocationService(this);
-            ServiceWorker.StartLocationService(this, routeListId);
-            ActionMenuItemView accept = (ActionMenuItemView) findViewById(R.id.taskAcceptRouteListBtn);
-            accept.setEnabled(false);
-            accept.setTitle("Принят");
+            if (!manager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("GPS отключен")
+                        .setMessage("Для продолжения требуется включить GPS.")
+                        .setNeutralButton("Ок", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+            } else {
+                ServiceWorker.StopLocationService(this);
+                ServiceWorker.StartLocationService(this, routeListId);
+                ActionMenuItemView accept = (ActionMenuItemView) findViewById(R.id.taskAcceptRouteListBtn);
+                accept.setEnabled(false);
+                accept.setTitle("Принят");
+            }
         }
         return super.onOptionsItemSelected(item);
     }

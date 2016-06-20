@@ -42,6 +42,7 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
 
         if (extras != null) {
             if (extras.getBoolean("EXIT", false)) {
+                extras.clear();
                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 i.putExtra("EXIT", true);
@@ -50,6 +51,7 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
                 return;
             }
             if (extras.getBoolean("LOGOUT", false)) {
+                extras.clear();
                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                 i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(i);
