@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.Geofence;
+
 import java.util.List;
 
 import ru.qsolution.vodovoz.driver.ArrayAdapters.OrderStatusAdapter;
@@ -26,6 +29,8 @@ import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.ChangeOrderStatusTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.Order;
+import ru.qsolution.vodovoz.driver.Services.GeofencingService;
+import ru.qsolution.vodovoz.driver.Services.MyGeofence;
 
 public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskListener<AsyncTaskResult<Boolean>>{
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -123,6 +128,19 @@ public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskLis
                 getRoute.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        //Own location listener
+
+                        FragmentActivity activity = getActivity();
+                        MyGeofence myGeofence = new MyGeofence(Integer.parseInt(order.Id), order.Latitude, order.Longitude, 150, Geofence.GEOFENCE_TRANSITION_ENTER);
+
+                        Intent geofencingService = new Intent(activity, GeofencingService.class);
+                        geofencingService.setAction(String.valueOf(Math.random()));
+                        geofencingService.putExtra(GeofencingService.EXTRA_ACTION, GeofencingService.Action.ADD);
+                        geofencingService.putExtra(GeofencingService.EXTRA_GEOFENCE, myGeofence);
+
+                        activity.startService(geofencingService);
+
+                        //Yandex navigation
                         Intent intent = new Intent("ru.yandex.yandexnavi.action.BUILD_ROUTE_ON_MAP");
                         intent.setPackage("ru.yandex.yandexnavi");
 

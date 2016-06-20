@@ -77,7 +77,6 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
 
         @Override
         public void onProviderDisabled(String provider) {
-            //TODO: On disable send array;
         }
     };
 
@@ -91,7 +90,6 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
     public int onStartCommand(Intent intent, int flags, int startId) {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO
             return 0;
         }
         Bundle extras = intent.getExtras();

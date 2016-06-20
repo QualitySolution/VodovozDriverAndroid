@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.ACCESS_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
 
     <application
         android:allowBackup="true"
@@ -44,6 +45,13 @@
         <service
             android:name=".Services.LocationService"
             android:exported="false"/>
+        <service android:name=".Services.GeofencingService"
+            android:exported="false"/>
+        <service android:name=".Services.ReceiveTransitionsIntentService"
+            android:exported="false"/>
+
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>
