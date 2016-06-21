@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "990176002262",
+    "firebase_url": "https://vodovozdriverapp-4e2cf.firebaseio.com",
+    "project_id": "vodovozdriverapp-4e2cf",
+    "storage_bucket": "vodovozdriverapp-4e2cf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:990176002262:android:be6ad19d25f96941",
+        "android_client_info": {
+          "package_name": "ru.qsolution.vodovoz.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "990176002262-bvdtqgg4a5er72srofl61gcumpprt9ja.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB24wiEHf46HsIrOeX08AYBKfyonCQnFag"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

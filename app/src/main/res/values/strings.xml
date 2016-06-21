@@ -38,6 +38,7 @@
 
     <!--Placeholders -->
     <string name="placeholder_id">%ID%</string>
+    <string name="placeholder_status">%STATUS%</string>
     <string name="placeholder_order_number">%ORDER NUMBER%</string>
     <string name="placeholder_client_name">%CLIENT NAME%</string>
     <string name="placeholder_contact_person">%CONTACT PERSON%</string>

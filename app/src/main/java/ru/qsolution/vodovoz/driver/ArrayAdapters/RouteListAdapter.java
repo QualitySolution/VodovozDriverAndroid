@@ -37,8 +37,10 @@ public class RouteListAdapter extends ArrayAdapter<RouteList> {
         TextView routeListDate;
         TextView routeListDeliveryShift;
         TextView routeListForwarder;
+        TextView routeListStatus;
 
         public RouteListHolder (View view) {
+            routeListStatus = (TextView) view.findViewById(R.id.routeListStatus);
             routeListNumber = (TextView) view.findViewById(R.id.routeListNumber);
             routeListDate = (TextView) view.findViewById(R.id.routeListDate);
             routeListDeliveryShift = (TextView) view.findViewById(R.id.routeListDeliveryShift);
@@ -65,6 +67,12 @@ public class RouteListAdapter extends ArrayAdapter<RouteList> {
         rl.routeListNumber.setText(routeLists.get(position).Id);
         rl.routeListDate.setText(df.format(routeLists.get(position).Date));
         rl.routeListDeliveryShift.setText(routeLists.get(position).DeliveryShift);
+        rl.routeListStatus.setText(routeLists.get(position).Status);
+        if (routeLists.get(position).Status.equals("В пути")) {
+            rl.routeListStatus.setTextColor(Color.parseColor("#36B032"));
+        } else if (routeLists.get(position).Status.equals("На погрузке")) {
+            rl.routeListStatus.setTextColor(Color.parseColor("#BABA00"));
+        }
         if (routeLists.get(position).Forwarder.equals("anyType{}"))
             rl.routeListForwarder.setText("Без экспедитора");
         else

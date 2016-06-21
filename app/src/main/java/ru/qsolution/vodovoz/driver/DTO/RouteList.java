@@ -14,20 +14,14 @@ public class RouteList implements Serializable{
     public final String Id;
     public final String Forwarder;
     public final String DeliveryShift;
+    public final String Status;
     public Date Date;
 
-    private final String status;
 
-    public String Status() {
-        switch (status) {
-            case "EnRoute" : return "В пути";
-            default: return "Неизвестный статус";
-        }
-    }
 
     public RouteList (SoapObject soapObject) {
         Id = soapObject.getProperty("Id").toString();
-        status = soapObject.getProperty("Status").toString();
+        Status = soapObject.getProperty("Status").toString();
         Forwarder = soapObject.getProperty("Forwarder").toString();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         try {

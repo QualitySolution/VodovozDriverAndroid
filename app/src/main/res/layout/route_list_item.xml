@@ -5,9 +5,18 @@
     android:layout_below="@+id/pageTitleTextView">
 
     <TextView
+        android:id="@+id/routeListStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/placeholder_status"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
         android:id="@+id/routeListNumber"
         android:layout_width="60dp"
         android:layout_height="60dp"
+        android:layout_below="@+id/routeListStatus"
         android:gravity="center"
         android:text="@string/placeholder_id"
         android:textAppearance="?android:attr/textAppearanceLarge" />
@@ -16,6 +25,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/routeListStatus"
         android:layout_marginBottom="5dp"
         android:layout_toEndOf="@+id/routeListNumber"
         android:layout_toRightOf="@+id/routeListNumber"
@@ -44,11 +54,12 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/linearLayout"
         android:layout_alignTop="@+id/linearLayout"
+        android:layout_below="@+id/routeListStatus"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_toRightOf="@+id/linearLayout"
         android:layout_toEndOf="@+id/linearLayout"
+        android:layout_toRightOf="@+id/linearLayout"
         android:gravity="center"
         android:text="@string/placeholder_forwarder_name"
         android:textColor="#000000"
