@@ -71,12 +71,15 @@ public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskLis
             TextView orderCommentTitle = (TextView) rootView.findViewById(R.id.orderCommentTitle);
             TextView deliveryPointComment = (TextView) rootView.findViewById(R.id.deliveryPointComment);
             TextView deliveryPointCommentTitle = (TextView) rootView.findViewById(R.id.deliveryPointCommentTitle);
+            final TextView bottlesReturnTitle = (TextView) rootView.findViewById(R.id.orderBottlesReturnText);
+            final TextView bottlesReturn = (TextView) rootView.findViewById(R.id.orderBottlerReturn);
             Button getRoute = (Button) rootView.findViewById(R.id.buttonGetRoute);
 
             orderNumber.setText(order.Title);
             orderClient.setText(order.Counterparty);
             orderAddress.setText(order.Address);
             orderDeliveryTime.setText(order.DeliverySchedule);
+
             if (order.OrderComment == null || order.OrderComment.equals("")) {
                 orderCommentTitle.setVisibility(View.GONE);
                 orderComment.setVisibility(View.GONE);
@@ -89,6 +92,13 @@ public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskLis
                 deliveryPointCommentTitle.setVisibility(View.GONE);
             } else {
                 deliveryPointComment.setText(order.DeliveryPointComment);
+            }
+
+            if (order.BottlesReturn == null || order.BottlesReturn.equals("")) {
+                bottlesReturn.setVisibility(View.GONE);
+                bottlesReturnTitle.setVisibility(View.GONE);
+            } else {
+                bottlesReturn.setText(order.BottlesReturn);
             }
 
             spinner = (Spinner) rootView.findViewById(R.id.orderStatusSpinner);
@@ -133,6 +143,10 @@ public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskLis
                                                 task.addListener(OrderInfoFragmentActivity.this);
                                                 SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
                                                 task.execute(sharedPref.getString("Authkey", ""), order.Id, Order.ORDER_STATUS.get(newStatus), input.getText().toString());
+                                                order.BottlesReturn = input.getText().toString();
+                                                bottlesReturn.setVisibility(View.VISIBLE);
+                                                bottlesReturnTitle.setVisibility(View.VISIBLE);
+                                                bottlesReturn.setText(order.BottlesReturn);
                                                 dialog.dismiss();
                                             }
                                         }
@@ -180,6 +194,8 @@ public class OrderInfoFragmentActivity extends Fragment implements IAsyncTaskLis
                                 task.addListener(OrderInfoFragmentActivity.this);
                                 SharedPreferences sharedPref = getContext().getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
                                 task.execute(sharedPref.getString("Authkey", ""), order.Id, Order.ORDER_STATUS.get(newStatus));
+                                bottlesReturn.setVisibility(View.GONE);
+                                bottlesReturnTitle.setVisibility(View.GONE);
                             }
                         }
                     }

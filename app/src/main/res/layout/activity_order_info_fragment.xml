@@ -33,7 +33,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/orderClient"
-        android:layout_centerVertical="true"
         android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp"
         android:text="@string/placeholder_client_address"
@@ -47,7 +46,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/orderAddress"
-        android:gravity="center"
         android:text="@string/delivery_time"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -58,7 +56,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/orderAddress"
-        android:gravity="center"
         android:text="@string/placeholder_delivery_time"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -86,11 +83,30 @@
             android:textAppearance="?android:attr/textAppearanceMedium" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/orderBottlesReturnText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/statusLayout"
+        android:text="@string/order_bottles_returned"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    <TextView
+        android:id="@+id/orderBottlerReturn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/statusLayout"
+        android:layout_toRightOf="@id/orderBottlesReturnText"
+        android:layout_toEndOf="@id/orderBottlesReturnText"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:text="@string/placeholder_bottles_number"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
     <Button
         android:id="@+id/buttonGetRoute"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/statusLayout"
+        android:layout_below="@+id/orderBottlerReturn"
         android:enabled="false"
         android:text="@string/get_route" />
 

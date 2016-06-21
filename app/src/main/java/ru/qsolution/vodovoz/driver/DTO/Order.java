@@ -25,16 +25,17 @@ public class Order implements Serializable {
     public final String Region;                   //FIXME: Not used
     public final String CityDistrict;             //FIXME: Not used
     public final String StreetDistrict;           //FIXME: Not used
-    public final String DeliveryPointComment;     //TODO: Not used
+    public final String DeliveryPointComment;
     public final String Contact;
     public final String Phone;
     public final String DeliverySchedule;
-    public final String OrderComment;             //TODO: Not used
+    public final String OrderComment;
     public final String Counterparty;
     public final String Address;
     public final ArrayList<String> Phones;
     public final ArrayList<String> OrderItems;
     public final ArrayList<String> OrderEquipment;
+    public String BottlesReturn;
     public String RouteListItemStatus;
     public Float Latitude;
     public Float Longitude;
@@ -53,6 +54,8 @@ public class Order implements Serializable {
         OrderComment = SoapWorker.SafeGetPropertyAsString(soapObject, "OrderComment");
         Counterparty = SoapWorker.SafeGetPropertyAsString(soapObject, "Counterparty");
         RouteListItemStatus = SoapWorker.SafeGetPropertyAsString(soapObject, "RouteListItemStatus");
+        BottlesReturn = SoapWorker.SafeGetPropertyAsString(soapObject, "BottlesReturn");
+
         Phones = new ArrayList<>();
         if (soapObject.getProperty("CPPhones") instanceof SoapObject) {
             SoapObject phones = (SoapObject)soapObject.getProperty("CPPhones");

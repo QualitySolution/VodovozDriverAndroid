@@ -18,6 +18,7 @@
     <string name="delivery_time">Время доставки:</string>
     <string name="other_contacts">Телефоны компании</string>
     <string name="order_items">Товары</string>
+    <string name="order_bottles_returned">Возвращено бутылей:</string>
     <string name="order_equipment">Оборудование</string>
 
     <string name="menu_item_shutdown">Завершение работы</string>
@@ -49,6 +50,7 @@
     <string name="placeholder_delivery_time">%DELIVERY TIME%</string>
     <string name="placeholder_order_comments">%ORDER COMMENTS%</string>
     <string name="placeholder_delivery_point_comments">%DELIVERY POINT COMMENTS%</string>
+    <string name="placeholder_bottles_number">%BOTTLES%</string>
 
     <!--Content Descriptions-->
     <string name="content_description_logo">Логотип "Веселый Водовоз"</string>
