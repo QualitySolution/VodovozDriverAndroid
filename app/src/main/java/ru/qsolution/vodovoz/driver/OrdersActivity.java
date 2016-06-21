@@ -44,6 +44,9 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     private Context context;
     private ListView list;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ArrayList<ShortOrder> orders = new ArrayList<>();
+    private ArrayList<ShortOrder> filteredOrders = new ArrayList<>();
+    private MenuItem showAllOrdersMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,16 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     public void AsyncTaskCompleted(AsyncTaskResult<ArrayList<ShortOrder>> result) {
         try {
             if (result.getException() == null && result.getResult() != null && result.getResult().size() > 0) {
-                adapter = new OrdersAdapter(this, result.getResult());
+                orders = result.getResult();
+                for (ShortOrder order : orders)
+                    if (order.OrderStatus.equals("В пути"))
+                        filteredOrders.add(order);
+
+                if (showAllOrdersMenuItem.isChecked())
+                    adapter = new OrdersAdapter(this, orders);
+                else
+                    adapter = new OrdersAdapter(this, filteredOrders);
+
                 list.setAdapter(adapter);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -110,6 +122,13 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.orders_list_menu, menu);
+        showAllOrdersMenuItem = menu.findItem(R.id.taskShowAll);
+        showAllOrdersMenuItem.setChecked(sharedPref.getBoolean("ShowAllOrders", true));
+        if (!sharedPref.contains("ShowAllOrders")) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("ShowAllOrders", true);
+            editor.apply();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -128,7 +147,19 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.taskChangeUserBtn) {
+        if (item.getItemId() == R.id.taskShowAll) {
+            item.setChecked(!item.isChecked());
+            if (item.isChecked())
+                adapter = new OrdersAdapter(this, orders);
+            else
+                adapter = new OrdersAdapter(this, filteredOrders);
+            list.setAdapter(adapter);
+
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("ShowAllOrders", item.isChecked());
+            editor.apply();
+        }
+        else if (item.getItemId() == R.id.taskChangeUserBtn) {
             ServiceWorker.StopLocationService(this);
 
             SharedPreferences.Editor editor = sharedPref.edit();
