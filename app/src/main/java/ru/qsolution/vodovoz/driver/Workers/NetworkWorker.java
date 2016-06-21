@@ -24,6 +24,7 @@ public class NetworkWorker {
     public static final String METHOD_LOGIN = "Auth";
     public static final String METHOD_SEND_COORDINATES = "SendCoordinates";
     public static final String METHOD_START_TRACK = "StartOrResumeTrack";
+    public static final String METHOD_ENABLE_PUSH = "EnablePushNotifications";
 
     public static final String FIELD_AUTH_KEY = "authKey";
     public static final String FIELD_ORDER_ID = "orderId";
@@ -36,6 +37,7 @@ public class NetworkWorker {
     public static final String FIELD_TRACK_ID = "trackId";
     public static final String FIELD_TRACK_POINT = "TrackPoint";
     public static final String FIELD_TRACK_POINT_LIST = "TrackPointList";
+    public static final String FIELD_TOKEN = "token";
 
 
     public static SoapSerializationEnvelope CreateEnvelope (SoapObject soapObject) {

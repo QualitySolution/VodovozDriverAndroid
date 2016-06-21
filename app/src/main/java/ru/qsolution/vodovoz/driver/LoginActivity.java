@@ -20,9 +20,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import ru.qsolution.vodovoz.driver.AsyncTasks.*;
@@ -60,6 +63,10 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
             }
         }
 
+        if (sharedPref.contains("firebase_token")) {
+            EnablePushNotificationsTask task = new EnablePushNotificationsTask();
+            task.execute(sharedPref.getString("Authkey", ""), sharedPref.getString("firebase_token", ""));
+        }
         //Checking app API version
         CheckAppVersionTask checkAppVersionTask = new CheckAppVersionTask();
         checkAppVersionTask.addListener(this);
@@ -181,6 +188,10 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString("Authkey", result.getResult());
                     editor.apply();
+                    if (sharedPref.contains("firebase_token")) {
+                        EnablePushNotificationsTask task = new EnablePushNotificationsTask();
+                        task.execute(sharedPref.getString("Authkey", ""), sharedPref.getString("firebase_token", ""));
+                    }
                     Intent i = new Intent(context, RouteListsActivity.class);
                     startActivity(i);
                     finish();

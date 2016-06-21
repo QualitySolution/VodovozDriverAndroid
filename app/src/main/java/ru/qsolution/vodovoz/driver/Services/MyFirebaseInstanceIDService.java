@@ -1,9 +1,16 @@
 package ru.qsolution.vodovoz.driver.Services;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+
+import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
+import ru.qsolution.vodovoz.driver.AsyncTasks.EnablePushNotificationsTask;
+import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
+import ru.qsolution.vodovoz.driver.R;
 
 /**
  * Created by Andrei Vinogradov on 21.06.16.
@@ -12,33 +19,29 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyFirebaseIIDService";
+    private static final String TOKEN_KEY = "firebase_token";
 
-    /**
-     * Called if InstanceID token is updated. This may occur if the security of
-     * the previous token had been compromised. Note that this is called when the InstanceID token
-     * is initially generated so this is where you would retrieve the token.
-     */
-    // [START refresh_token]
     @Override
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + refreshedToken);
-
-        // TODO: Implement this method to send any registration to your app's servers.
-        sendRegistrationToServer(refreshedToken);
+        saveRegistrationToken(refreshedToken);
+        sendTokenToServer(refreshedToken);
     }
-    // [END refresh_token]
 
-    /**
-     * Persist token to third-party servers.
-     *
-     * Modify this method to associate the user's FCM InstanceID token with any server-side account
-     * maintained by your application.
-     *
-     * @param token The new token.
-     */
-    private void sendRegistrationToServer(String token) {
-        // Add custom implementation, as needed.
+    private void saveRegistrationToken(String token) {
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        if (sharedPref.contains(TOKEN_KEY))
+            editor.remove(TOKEN_KEY);
+        editor.putString(TOKEN_KEY, token);
+        editor.apply();
+    }
+
+    private void sendTokenToServer(String token) {
+        SharedPreferences sharedPref = getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+        EnablePushNotificationsTask task = new EnablePushNotificationsTask();
+        task.execute(sharedPref.getString("Authkey", ""), token);
     }
 }
