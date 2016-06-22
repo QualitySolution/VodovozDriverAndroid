@@ -8,12 +8,12 @@ import org.ksoap2.serialization.SoapSerializationEnvelope;
  * Created by Andrei on 06.06.16.
  */
 public class NetworkWorker {
-    private static final String actionInterface = "IAndroidDriverService/";
+    public static final String ACTION_INTERFACE_ANDROID = "IAndroidDriverService/";
+    public static final String ACTION_INTERFACE_CHAT = "IChatService/";
 
     public static final String NAMESPACE = "http://tempuri.org/";
-    public static final String SERVICE_URL = "http://saas.qsolution.ru:9000/AndroidDriverService";
-    //public static final String SERVICE_URL = "http://10.204.250.124:9000/AndroidDriverService";
-    //public static final String SERVICE_URL = "http://vinogradov.sknt.ru:9000/AndroidDriverService";
+    public static final String ANDROID_SERVICE_URL = "http://saas.qsolution.ru:9000/AndroidDriverService";
+    public static final String CHAT_SERVICE_URL = "http://saas.qsolution.ru:9000/ChatService";
 
     public static final String METHOD_CHANGE_ORDER_STATUS = "ChangeOrderStatus";
     public static final String METHOD_CHECK_APP_VERSION = "CheckAppCodeVersion";
@@ -25,6 +25,8 @@ public class NetworkWorker {
     public static final String METHOD_SEND_COORDINATES = "SendCoordinates";
     public static final String METHOD_START_TRACK = "StartOrResumeTrack";
     public static final String METHOD_ENABLE_PUSH = "EnablePushNotifications";
+    public static final String METHOD_SEND_MESSAGE = "SendMessageToLogistician";
+    public static final String METHOD_GET_MESSAGES = "AndroidGetChatMessages";
 
     public static final String FIELD_AUTH_KEY = "authKey";
     public static final String FIELD_ORDER_ID = "orderId";
@@ -38,6 +40,8 @@ public class NetworkWorker {
     public static final String FIELD_TRACK_POINT = "TrackPoint";
     public static final String FIELD_TRACK_POINT_LIST = "TrackPointList";
     public static final String FIELD_TOKEN = "token";
+    public static final String FIELD_MESSAGE = "message";
+    public static final String FIELD_DAYS = "days";
 
 
     public static SoapSerializationEnvelope CreateEnvelope (SoapObject soapObject) {
@@ -50,7 +54,7 @@ public class NetworkWorker {
         return envelope;
     }
 
-    public static String GetSoapAction (String actionName) {
+    public static String GetSoapAction (String actionName, String actionInterface) {
         return NAMESPACE + actionInterface + actionName;
     }
 }

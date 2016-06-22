@@ -32,7 +32,7 @@ public class CheckAuthTask extends AsyncTask<String, Void, AsyncTaskResult<Boole
         AsyncTaskResult<Boolean> result;
         String METHOD_NAME = NetworkWorker.METHOD_CHECK_AUTH;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ANDROID_SERVICE_URL);
 
         SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
         request.addProperty(NetworkWorker.FIELD_AUTH_KEY, args[0]);
@@ -44,7 +44,7 @@ public class CheckAuthTask extends AsyncTask<String, Void, AsyncTaskResult<Boole
         System.setProperty("http.keepAlive", "false");
 
         try {
-            httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope, headerPropertyArrayList);
+            httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME, NetworkWorker.ACTION_INTERFACE_ANDROID), envelope, headerPropertyArrayList);
             SoapPrimitive response = (SoapPrimitive) envelope.getResponse();
             result = new AsyncTaskResult<>(Boolean.parseBoolean(response.getValue().toString()));
         } catch (XmlPullParserException | IOException e) {

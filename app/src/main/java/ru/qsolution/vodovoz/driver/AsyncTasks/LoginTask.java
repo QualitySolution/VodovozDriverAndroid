@@ -32,7 +32,7 @@ public class LoginTask extends AsyncTask<String, Void, AsyncTaskResult<String>> 
         AsyncTaskResult<String> result;
         String METHOD_NAME = NetworkWorker.METHOD_LOGIN;
 
-        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.SERVICE_URL);
+        HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ANDROID_SERVICE_URL);
         SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
         request.addProperty(NetworkWorker.FIELD_LOGIN, args[0]);
         request.addProperty(NetworkWorker.FIELD_PASSWORD, args[1]);
@@ -44,7 +44,7 @@ public class LoginTask extends AsyncTask<String, Void, AsyncTaskResult<String>> 
         System.setProperty("http.keepAlive", "false");
 
         try {
-            httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME), envelope, headerPropertyArrayList);
+            httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME, NetworkWorker.ACTION_INTERFACE_ANDROID), envelope, headerPropertyArrayList);
             SoapPrimitive primitive = (SoapPrimitive)envelope.getResponse();
             result = new AsyncTaskResult<>(primitive.getValue().toString());
         } catch (XmlPullParserException | IOException e) {

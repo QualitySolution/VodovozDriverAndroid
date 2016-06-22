@@ -108,7 +108,6 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
                         ShortOrder order = adapter.getItem(position);
                         Intent intent = new Intent(OrdersActivity.this, TabbedOrderDetailedActivity.class);
                         intent.putExtra("OrderId", order.Id);
-                        // startActivity(intent);
                         startActivityForResult(intent, 1);
                     }
                 });
@@ -290,7 +289,8 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
                 if (drawerItems[position].equals(getResources().getString(R.string.route_lists))) {
                     OrdersActivity.this.finish();
                 } else if (drawerItems[position].equals(getResources().getString(R.string.chat))) {
-                    //TODO
+                    Intent i = new Intent(getApplicationContext(), ChatActivity.class);
+                    startActivity(i);
                 }
                 drawerLayout.closeDrawers();
             }

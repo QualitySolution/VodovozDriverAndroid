@@ -188,7 +188,8 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
                 if (drawerItems[position].equals(getResources().getString(R.string.route_lists))) {
                     refreshRouteLists();
                 } else if (drawerItems[position].equals(getResources().getString(R.string.chat))) {
-                    Toast.makeText(RouteListsActivity.this, "Chat", Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(getApplicationContext(), ChatActivity.class);
+                    startActivity(i);
                 }
                 drawerLayout.closeDrawers();
             }
