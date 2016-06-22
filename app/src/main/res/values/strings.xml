@@ -36,6 +36,18 @@
         <item name="EnRoute">В пути</item>
     </string-array>
 
+    <string-array name="left_menu_items_array">
+        <item>@string/route_lists</item>
+        <item>@string/chat</item>
+    </string-array>
+    <string name="route_lists">Маршрутные листы</string>
+    <string name="chat">Чат</string>
+
+
+
+    <string name="drawer_open">Открыть меню</string>
+    <string name="drawer_close">Закрыть меню</string>
+
     <!--Placeholders -->
     <string name="placeholder_id">%ID%</string>
     <string name="placeholder_status">%STATUS%</string>

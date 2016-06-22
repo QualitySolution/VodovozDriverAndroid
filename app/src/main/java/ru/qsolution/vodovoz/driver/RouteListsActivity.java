@@ -3,7 +3,10 @@ package ru.qsolution.vodovoz.driver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -24,11 +28,14 @@ import ru.qsolution.vodovoz.driver.DTO.RouteList;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
 public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>>, SwipeRefreshLayout.OnRefreshListener {
+    private ActionBarDrawerToggle drawerToggle;
     private RouteListAdapter adapter;
     private SharedPreferences sharedPref;
     private ListView list;
+    private ListView drawerList;
     private Context context;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private DrawerLayout drawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,18 +66,37 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
                 return;
             }
         }
+        // Configuring left menu
+        drawerList = (ListView) findViewById(R.id.nav_list);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        addDrawerItems();
+        setupDrawer();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+        //Configuring swipe to refresh
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         swipeRefreshLayout.setOnRefreshListener(this);
-        GetRouteListsTask task = new GetRouteListsTask(this);
-        task.addListener(this);
-        task.execute(sharedPref.getString("Authkey", ""));
+
+        //Retrieving route lists
+        refreshRouteLists();
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
     protected void onResume() {
-        GetRouteListsTask task = new GetRouteListsTask(this);
-        task.addListener(this);
-        task.execute(sharedPref.getString("Authkey", ""));
+        refreshRouteLists();
         super.onResume();
     }
 
@@ -112,6 +138,11 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Activate the navigation drawer toggle
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         if (item.getItemId() == R.id.taskChangeUserBtn) {
             ServiceWorker.StopLocationService(this);
 
@@ -143,6 +174,48 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
+        refreshRouteLists();
+    }
+
+    private void addDrawerItems() {
+        final String[] drawerItems = getResources().getStringArray(R.array.left_menu_items_array);
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, drawerItems);
+        drawerList.setAdapter(mAdapter);
+
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (drawerItems[position].equals(getResources().getString(R.string.route_lists))) {
+                    refreshRouteLists();
+                } else if (drawerItems[position].equals(getResources().getString(R.string.chat))) {
+                    Toast.makeText(RouteListsActivity.this, "Chat", Toast.LENGTH_LONG).show();
+                }
+                drawerLayout.closeDrawers();
+            }
+        });
+    }
+
+    private void setupDrawer() {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+        };
+
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerLayout.addDrawerListener(drawerToggle);
+    }
+
+    private void refreshRouteLists() {
         GetRouteListsTask task = new GetRouteListsTask(RouteListsActivity.this);
         task.addListener(RouteListsActivity.this);
         task.execute(sharedPref.getString("Authkey", ""));

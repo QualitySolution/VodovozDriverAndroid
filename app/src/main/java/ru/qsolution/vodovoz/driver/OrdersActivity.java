@@ -6,10 +6,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,9 +28,7 @@ import java.util.ArrayList;
 
 import ru.qsolution.vodovoz.driver.ArrayAdapters.OrdersAdapter;
 import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
-import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrderDetailedTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrdersTask;
-import ru.qsolution.vodovoz.driver.AsyncTasks.GetRouteListsTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.ShortOrder;
 import ru.qsolution.vodovoz.driver.Services.LocationService;
@@ -47,6 +47,9 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     private ArrayList<ShortOrder> orders = new ArrayList<>();
     private ArrayList<ShortOrder> filteredOrders = new ArrayList<>();
     private MenuItem showAllOrdersMenuItem;
+    private ListView drawerList;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle drawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,12 +63,29 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
 
         if (extras != null) {
             routeListId = extras.getString("RouteListId");
-            GetOrdersTask task = new GetOrdersTask(this);
-            task.addListener(this);
-            task.execute(sharedPref.getString("Authkey", ""), routeListId);
+            refreshOrders();
             swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
             swipeRefreshLayout.setOnRefreshListener(this);
         }
+        // Configuring left menu
+        drawerList = (ListView) findViewById(R.id.nav_list);
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        addDrawerItems();
+        setupDrawer();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        drawerToggle.onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -110,13 +130,8 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                GetOrdersTask task = new GetOrdersTask(this);
-                task.addListener(this);
-                task.execute(sharedPref.getString("Authkey", ""), routeListId);
-            }
-        }
+        if (requestCode == 1 && resultCode == RESULT_OK)
+            refreshOrders();
     }
 
     @Override
@@ -147,6 +162,11 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        // Activate the navigation drawer toggle
+        if (drawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+
         if (item.getItemId() == R.id.taskShowAll) {
             item.setChecked(!item.isChecked());
             if (item.isChecked())
@@ -158,8 +178,7 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean("ShowAllOrders", item.isChecked());
             editor.apply();
-        }
-        else if (item.getItemId() == R.id.taskChangeUserBtn) {
+        } else if (item.getItemId() == R.id.taskChangeUserBtn) {
             ServiceWorker.StopLocationService(this);
 
             SharedPreferences.Editor editor = sharedPref.edit();
@@ -257,6 +276,48 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     @Override
     public void onRefresh() {
         swipeRefreshLayout.setRefreshing(true);
+        refreshOrders();
+    }
+
+    private void addDrawerItems() {
+        final String[] drawerItems = getResources().getStringArray(R.array.left_menu_items_array);
+        ArrayAdapter<String> mAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, drawerItems);
+        drawerList.setAdapter(mAdapter);
+
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (drawerItems[position].equals(getResources().getString(R.string.route_lists))) {
+                    OrdersActivity.this.finish();
+                } else if (drawerItems[position].equals(getResources().getString(R.string.chat))) {
+                    //TODO
+                }
+                drawerLayout.closeDrawers();
+            }
+        });
+    }
+
+    private void setupDrawer() {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                invalidateOptionsMenu();
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                invalidateOptionsMenu();
+            }
+        };
+
+        drawerToggle.setDrawerIndicatorEnabled(true);
+        drawerLayout.addDrawerListener(drawerToggle);
+    }
+
+    private void refreshOrders() {
         GetOrdersTask task = new GetOrdersTask(this);
         task.addListener(this);
         task.execute(sharedPref.getString("Authkey", ""), routeListId);

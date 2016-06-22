@@ -24,9 +24,10 @@ import ru.qsolution.vodovoz.driver.DTO.Order;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
 public class TabbedOrderDetailedActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<Order>> {
+    public Boolean needUpdate = false;
+
     private SharedPreferences sharedPref;
     private AsyncTaskResult<Order> result;
-    public Boolean needUpdate = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
