@@ -12,8 +12,8 @@ public class NetworkWorker {
     public static final String ACTION_INTERFACE_CHAT = "IChatService/";
 
     public static final String NAMESPACE = "http://tempuri.org/";
-    public static final String ANDROID_SERVICE_URL = "http://saas.qsolution.ru:9000/AndroidDriverService";
-    public static final String CHAT_SERVICE_URL = "http://saas.qsolution.ru:9000/ChatService";
+    public static final String ANDROID_SERVICE_URL = "http://vod-srv.qsolution.ru:9000/AndroidDriverService";
+    public static final String CHAT_SERVICE_URL = "http://vod-srv.qsolution.ru:9000/ChatService";
 
     public static final String METHOD_CHANGE_ORDER_STATUS = "ChangeOrderStatus";
     public static final String METHOD_CHECK_APP_VERSION = "CheckAppCodeVersion";
