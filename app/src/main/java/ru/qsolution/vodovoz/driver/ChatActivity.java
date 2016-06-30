@@ -1,7 +1,9 @@
 package ru.qsolution.vodovoz.driver;
 
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -24,13 +26,15 @@ import ru.qsolution.vodovoz.driver.AsyncTasks.GetChatMessagesTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.AsyncTasks.SendMessageTask;
 import ru.qsolution.vodovoz.driver.DTO.Message;
+import ru.qsolution.vodovoz.driver.Services.INotificationObserver;
+import ru.qsolution.vodovoz.driver.Services.MyFirebaseMessagingService;
 
 /**
  * Created by Andrei Vinogradov on 22.06.16.
  * (c) Quality Solution Ltd.
  */
 
-public class ChatActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<Boolean>> {
+public class ChatActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<Boolean>>, INotificationObserver {
     private EditText inputMsg;
 
     // Chat messages list adapter
@@ -38,6 +42,25 @@ public class ChatActivity extends AppCompatActivity implements IAsyncTaskListene
     private List<Message> listMessages;
     private GetMessagesListener getMessagesListener;
     private SharedPreferences sharedPref;
+    private boolean isActive = false;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isActive = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isActive = false;
+    }
+
+    @Override
+    protected void onDestroy() {
+        MyFirebaseMessagingService.RemoveObserver(this);
+        super.onDestroy();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +92,9 @@ public class ChatActivity extends AppCompatActivity implements IAsyncTaskListene
 
         adapter = new MessagesListAdapter(this, listMessages);
         listViewMessages.setAdapter(adapter);
+        MyFirebaseMessagingService.AddObserver(this);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(MyFirebaseMessagingService.MESSAGE_NOTIFICATION);
     }
 
     @Override
@@ -103,6 +129,22 @@ public class ChatActivity extends AppCompatActivity implements IAsyncTaskListene
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void HandleNotification() {
+        refreshMessages();
+        playBeep();
+    }
+
+    @Override
+    public Boolean IsActive() {
+        return isActive;
+    }
+
+    @Override
+    public String NotificationType() {
+        return "message";
     }
 
     private class GetMessagesListener implements IAsyncTaskListener<AsyncTaskResult<ArrayList<Message>>> {

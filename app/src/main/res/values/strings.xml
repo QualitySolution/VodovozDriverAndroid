@@ -45,6 +45,7 @@
 
     <string name="btn_send">Отправить</string>
     <string name="unable_to_get_messages">Не удалось загрузить сообщения</string>
+    <string name="new_chat_message">Новое сообщение</string>
 
     <string name="drawer_open">Открыть меню</string>
     <string name="drawer_close">Закрыть меню</string>

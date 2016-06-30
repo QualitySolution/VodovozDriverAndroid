@@ -1,60 +1,92 @@
 package ru.qsolution.vodovoz.driver.Services;
 
-import android.util.Log;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import ru.qsolution.vodovoz.driver.ChatActivity;
+import ru.qsolution.vodovoz.driver.R;
 
 
 /**
  * Created by Andrei Vinogradov on 21.06.16.
  * (c) Quality Solution Ltd.
  */
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
+    public static final int MESSAGE_NOTIFICATION = 0;
+    public static List<INotificationObserver> notificationObserverList = new ArrayList<>();
 
-    private static final String TAG = "MyFirebaseMsgService";
-
-    /**
-     * Called when message is received.
-     *
-     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
-     */
-    // [START receive_message]
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // TODO(developer): Handle FCM messages here.
-        // If the application is in the foreground handle both data and notification messages here.
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
-        Log.d(TAG, "Notification Message Body: " + remoteMessage.getNotification().getBody());
+        Map<String, String> data = remoteMessage.getData();
+        if (data == null || data.size() == 0)
+            return;
+        String notificationType = data.get("notificationType");
+        switch (notificationType) {
+            case "message":
+                String sender = data.get("sender");
+                String message = data.get("message");
+                sendChatNotification(sender, message);
+                break;
+            default:
+                return;
+        }
     }
-    // [END receive_message]
 
-    /**
-     * Create and show a simple notification containing the received FCM message.
-     *
-     * @param messageBody FCM message body received.
-     */
-    private void sendNotification(String messageBody) {
-        /*ntent intent = new Intent(this, MainActivity.class);
+    private void sendChatNotification(String sender, String message) {
+        boolean observableNotified = false;
+        for (INotificationObserver observer : notificationObserverList) {
+            if (observer.NotificationType().equals("message") && observer.IsActive()) {
+                observer.HandleNotification();
+                observableNotified = true;
+            }
+        }
+        if (observableNotified)
+            return;
+        Intent intent = new Intent(this, ChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code //, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 
-        Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-                .setSmallIcon(R.drawable.ic_stat_ic_notification)
-                .setContentTitle("FCM Message")
-                .setContentText(messageBody)
+                .setSmallIcon(R.drawable.small_icon)
+                .setContentTitle(sender)
+                .setContentText(message)
                 .setAutoCancel(true)
-                .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);
+                .setContentIntent(pendingIntent)
+                .setDefaults(Notification.DEFAULT_VIBRATE);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        notificationManager.notify(0 /* ID of notification //, notificationBuilder.build());*/
+        MediaPlayer mp= MediaPlayer.create(getApplicationContext(), R.raw.notification);
+        mp.start();
+
+        notificationManager.notify(MESSAGE_NOTIFICATION, notificationBuilder.build());
+    }
+
+    public static void AddObserver(INotificationObserver observer) {
+        if (!notificationObserverList.contains(observer)) {
+            notificationObserverList.add(observer);
+        }
+    }
+
+    public static void RemoveObserver(INotificationObserver observer) {
+        notificationObserverList.remove(observer);
     }
 
 }
