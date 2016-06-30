@@ -16,7 +16,7 @@ android {
         applicationId "ru.qsolution.vodovoz.driver"
         minSdkVersion 16
         targetSdkVersion 24
-        versionCode 3
+        versionCode 4
         versionName "1.0.0"
     }
     buildTypes {
@@ -56,6 +56,7 @@ dependencies {
     compile 'com.google.code.ksoap2-android:ksoap2-android:3.6.1'
     compile 'commons-codec:commons-codec:1.10'
     compile 'com.android.support:design:24.0.0'
+    compile 'com.android.support:multidex:1.0.1'
 }
 
 apply plugin: 'com.google.gms.google-services'
