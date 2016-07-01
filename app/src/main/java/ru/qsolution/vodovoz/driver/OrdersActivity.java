@@ -168,8 +168,10 @@ public class OrdersActivity extends AppCompatActivity implements
                 .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         FinishRouteListTask task = new FinishRouteListTask();
+                        FinishRouteListListener listener = new FinishRouteListListener(OrdersActivity.this.getApplicationContext());
+                        task.addListener(listener);
                         task.execute(sharedPref.getString("Authkey", ""), routeListId);
-                        OrdersActivity.this.finish();
+
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -394,5 +396,35 @@ public class OrdersActivity extends AppCompatActivity implements
     @Override
     public String NotificationType() {
         return "orderStatusChange";
+    }
+
+    private class FinishRouteListListener implements IAsyncTaskListener<AsyncTaskResult<Boolean>> {
+        private final Context context;
+
+        public FinishRouteListListener(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        public void AsyncTaskCompleted(AsyncTaskResult<Boolean> result) {
+            try {
+                if (result.getException() == null && result.getResult()) {
+                    finish();
+                }
+                //If not succeeded
+                else if (result.getException() == null && !result.getResult()) {
+                    //TODO
+                }
+                //If exception
+                else {
+                    Toast toast = Toast.makeText(context, "Не удалось подключиться к серверу.", Toast.LENGTH_LONG);
+                    toast.show();
+                    throw result.getException();
+                }
+            } catch (Exception e) {
+                if (BuildConfig.DEBUG)
+                    e.printStackTrace();
+            }
+        }
     }
 }
