@@ -29,8 +29,19 @@ import ru.qsolution.vodovoz.driver.R;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static final int MESSAGE_NOTIFICATION = 0;
+    public static final int STATUS_NOTIFICATION = 1;
+    public static final int SCHEDULE_NOTIFICATION = 2;
     public static List<INotificationObserver> notificationObserverList = new ArrayList<>();
 
+
+    public static int GetNotificationCode (String notificationType) {
+        switch (notificationType) {
+            case "message": return MESSAGE_NOTIFICATION;
+            case "orderStatusChange": return STATUS_NOTIFICATION;
+            case "orderDeliveryScheduleChange": return SCHEDULE_NOTIFICATION;
+            default: return -1;
+        }
+    }
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Map<String, String> data = remoteMessage.getData();
@@ -42,6 +53,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         switch (notificationType) {
             case "message":
             case "orderStatusChange":
+            case "orderDeliveryScheduleChange":
                 sender = data.get("sender");
                 message = data.get("message");
                 sendChatNotification(sender, message, notificationType);
@@ -66,6 +78,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     observableNotified = observer.NotificationType().equals("message");
                 }
             }
+        } else if (notificationType.equals("orderDeliveryScheduleChange")) {
+            for (INotificationObserver observer : notificationObserverList) {
+                if ((observer.NotificationType().equals("message") || observer.NotificationType().equals("orderDeliveryScheduleChange")) && observer.IsActive()) {
+                    observer.HandleNotification();
+                    observableNotified = observer.NotificationType().equals("message");
+                }
+            }
         }
 
         if (observableNotified)
@@ -80,15 +99,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentText(message)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
-                .setDefaults(Notification.DEFAULT_VIBRATE);
+                .setDefaults(Notification.DEFAULT_ALL);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        MediaPlayer mp= MediaPlayer.create(getApplicationContext(), R.raw.notification);
-        mp.start();
-
-        notificationManager.notify(MESSAGE_NOTIFICATION, notificationBuilder.build());
+        notificationManager.notify(GetNotificationCode(notificationType), notificationBuilder.build());
     }
 
     public static void AddObserver(INotificationObserver observer) {
