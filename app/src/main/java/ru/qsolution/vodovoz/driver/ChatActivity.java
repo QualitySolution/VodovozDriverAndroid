@@ -133,8 +133,13 @@ public class ChatActivity extends AppCompatActivity implements IAsyncTaskListene
 
     @Override
     public void HandleNotification() {
-        refreshMessages();
-        playBeep();
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                refreshMessages();
+                playBeep();
+            }
+        });
     }
 
     @Override

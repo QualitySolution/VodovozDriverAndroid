@@ -37,25 +37,37 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         if (data == null || data.size() == 0)
             return;
         String notificationType = data.get("notificationType");
+        String sender;
+        String message;
         switch (notificationType) {
             case "message":
-                String sender = data.get("sender");
-                String message = data.get("message");
-                sendChatNotification(sender, message);
-                break;
+            case "orderStatusChange":
+                sender = data.get("sender");
+                message = data.get("message");
+                sendChatNotification(sender, message, notificationType);
             default:
                 return;
         }
     }
 
-    private void sendChatNotification(String sender, String message) {
+    private void sendChatNotification(String sender, String message, String notificationType) {
         boolean observableNotified = false;
-        for (INotificationObserver observer : notificationObserverList) {
-            if (observer.NotificationType().equals("message") && observer.IsActive()) {
-                observer.HandleNotification();
-                observableNotified = true;
+        if (notificationType.equals("message")) {
+            for (INotificationObserver observer : notificationObserverList) {
+                if (observer.NotificationType().equals("message") && observer.IsActive()) {
+                    observer.HandleNotification();
+                    observableNotified = true;
+                }
+            }
+        } else if (notificationType.equals("orderStatusChange")) {
+            for (INotificationObserver observer : notificationObserverList) {
+                if ((observer.NotificationType().equals("message") || observer.NotificationType().equals("orderStatusChange")) && observer.IsActive()) {
+                    observer.HandleNotification();
+                    observableNotified = observer.NotificationType().equals("message");
+                }
             }
         }
+
         if (observableNotified)
             return;
         Intent intent = new Intent(this, ChatActivity.class);

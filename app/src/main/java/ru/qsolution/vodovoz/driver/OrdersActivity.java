@@ -1,6 +1,7 @@
 package ru.qsolution.vodovoz.driver;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -28,13 +29,20 @@ import java.util.ArrayList;
 
 import ru.qsolution.vodovoz.driver.ArrayAdapters.OrdersAdapter;
 import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
+import ru.qsolution.vodovoz.driver.AsyncTasks.FinishRouteListTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetOrdersTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
+import ru.qsolution.vodovoz.driver.DTO.Order;
 import ru.qsolution.vodovoz.driver.DTO.ShortOrder;
+import ru.qsolution.vodovoz.driver.Services.INotificationObserver;
 import ru.qsolution.vodovoz.driver.Services.LocationService;
+import ru.qsolution.vodovoz.driver.Services.MyFirebaseMessagingService;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
-public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>>, SwipeRefreshLayout.OnRefreshListener {
+public class OrdersActivity extends AppCompatActivity implements
+        IAsyncTaskListener<AsyncTaskResult<ArrayList<ShortOrder>>>,
+        SwipeRefreshLayout.OnRefreshListener,
+        INotificationObserver {
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 42;
     private static final int MY_PERMISSIONS_REQUEST_ACCESS_COARSE_LOCATION = 24;
 
@@ -50,6 +58,18 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
     private ListView drawerList;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private Boolean isActive = false;
+    @Override
+    protected void onStart() {
+        super.onStart();
+        isActive = true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        isActive = false;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +94,7 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
         setupDrawer();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        MyFirebaseMessagingService.AddObserver(this);
     }
 
     @Override
@@ -125,6 +146,38 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
                 e.printStackTrace();
         }
         swipeRefreshLayout.setRefreshing(false);
+        if (noEnRouteOrders())
+            runCloseRouteListDlg();
+    }
+
+    private boolean noEnRouteOrders() {
+        if (orders == null)
+            return false;
+        for (ShortOrder order : orders) {
+            if (order.OrderStatus.equals("В пути"))
+                return false;
+        }
+        return true;
+    }
+
+    private void runCloseRouteListDlg() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Завершить маршрутный лист?")
+                .setMessage("В данном маршрутном листе не осталось невыполненных заказов. Завершить его? " +
+                        "После завершения данный маршрутный лист уже нельзя будет открыть.")
+                .setPositiveButton("Да", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        FinishRouteListTask task = new FinishRouteListTask();
+                        task.execute(sharedPref.getString("Authkey", ""), routeListId);
+                        OrdersActivity.this.finish();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+        Dialog dlg = builder.create();
+        dlg.show();
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -321,5 +374,25 @@ public class OrdersActivity extends AppCompatActivity implements IAsyncTaskListe
         GetOrdersTask task = new GetOrdersTask(this);
         task.addListener(this);
         task.execute(sharedPref.getString("Authkey", ""), routeListId);
+    }
+
+    @Override
+    public void HandleNotification() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                refreshOrders();
+            }
+        });
+    }
+
+    @Override
+    public Boolean IsActive() {
+        return isActive;
+    }
+
+    @Override
+    public String NotificationType() {
+        return "orderStatusChange";
     }
 }

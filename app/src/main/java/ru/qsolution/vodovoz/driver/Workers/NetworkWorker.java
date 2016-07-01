@@ -27,6 +27,7 @@ public class NetworkWorker {
     public static final String METHOD_ENABLE_PUSH = "EnablePushNotifications";
     public static final String METHOD_SEND_MESSAGE = "SendMessageToLogistician";
     public static final String METHOD_GET_MESSAGES = "AndroidGetChatMessages";
+    public static final String METHOD_FINISH_ROUTE_LIST = "FinishRouteList";
 
     public static final String FIELD_AUTH_KEY = "authKey";
     public static final String FIELD_ORDER_ID = "orderId";
