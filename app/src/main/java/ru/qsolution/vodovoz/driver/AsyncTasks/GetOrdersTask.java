@@ -70,12 +70,15 @@ public class GetOrdersTask extends AsyncTask<String, Void, AsyncTaskResult<Array
             SoapObject ordersList = (SoapObject) ordersListsObj;
 
             orders = new ArrayList<>();
-            for (int i = 0; i < ordersList.getPropertyCount(); i++) {
-                Object property = ordersList.getProperty(i);
-                if (property instanceof SoapObject) {
-                    SoapObject soapObject = (SoapObject) property;
-                    ShortOrder order = new ShortOrder(soapObject);
-                    orders.add(order);
+
+            if (ordersList != null) {
+                for (int i = 0; i < ordersList.getPropertyCount(); i++) {
+                    Object property = ordersList.getProperty(i);
+                    if (property instanceof SoapObject) {
+                        SoapObject soapObject = (SoapObject) property;
+                        ShortOrder order = new ShortOrder(soapObject);
+                        orders.add(order);
+                    }
                 }
             }
 

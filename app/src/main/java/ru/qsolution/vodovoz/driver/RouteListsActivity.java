@@ -35,6 +35,7 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
     private ListView drawerList;
     private Context context;
     private SwipeRefreshLayout swipeRefreshLayout;
+    private MenuItem useGPSTimeMenuItem;
     private DrawerLayout drawerLayout;
 
     @Override
@@ -133,6 +134,13 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.route_lists_menu, menu);
+        useGPSTimeMenuItem = menu.findItem(R.id.taskUseGPSTime);
+        useGPSTimeMenuItem.setChecked(sharedPref.getBoolean("UseGPSTime", true));
+        if (!sharedPref.contains("UseGPSTime")) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("UseGPSTime", true);
+            editor.apply();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -154,6 +162,11 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(i);
             finish();
+        } else if (item.getItemId() == R.id.taskUseGPSTime) {
+            item.setChecked(!item.isChecked());
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("UseGPSTime", item.isChecked());
+            editor.apply();
         } else if (item.getItemId() == R.id.taskExitBtn) {
             Intent i = new Intent(getApplicationContext(), LoginActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

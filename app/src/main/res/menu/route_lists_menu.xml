@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    <item
+        android:id="@+id/taskUseGPSTime"
+        android:title="@string/menu_use_gps_time"
+        app:showAsAction="never"
+        android:checkable="true"
+        android:checked="true" />
     <item
         android:id="@+id/taskChangeUserBtn"
         android:title="@string/menu_item_logout"

@@ -46,7 +46,11 @@ public class LoginTask extends AsyncTask<String, Void, AsyncTaskResult<String>> 
         try {
             httpTransport.call(NetworkWorker.GetSoapAction(METHOD_NAME, NetworkWorker.ACTION_INTERFACE_ANDROID), envelope, headerPropertyArrayList);
             SoapPrimitive primitive = (SoapPrimitive)envelope.getResponse();
-            result = new AsyncTaskResult<>(primitive.getValue().toString());
+            if (primitive != null && primitive.getValue() != null) {
+                result = new AsyncTaskResult<>(primitive.getValue().toString());
+            } else {
+                result = new AsyncTaskResult<>(new NullPointerException());
+            }
         } catch (XmlPullParserException | IOException e) {
             result = new AsyncTaskResult<>(e);
         }

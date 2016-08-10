@@ -55,10 +55,12 @@ public class OrdersActivity extends AppCompatActivity implements
     private ArrayList<ShortOrder> orders = new ArrayList<>();
     private ArrayList<ShortOrder> filteredOrders = new ArrayList<>();
     private MenuItem showAllOrdersMenuItem;
+    private MenuItem useGPSTimeMenuItem;
     private ListView drawerList;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private Boolean isActive = false;
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -193,9 +195,17 @@ public class OrdersActivity extends AppCompatActivity implements
         getMenuInflater().inflate(R.menu.orders_list_menu, menu);
         showAllOrdersMenuItem = menu.findItem(R.id.taskShowAll);
         showAllOrdersMenuItem.setChecked(sharedPref.getBoolean("ShowAllOrders", true));
+        useGPSTimeMenuItem = menu.findItem(R.id.taskUseGPSTime);
+        useGPSTimeMenuItem.setChecked(sharedPref.getBoolean("UseGPSTime", true));
+
         if (!sharedPref.contains("ShowAllOrders")) {
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean("ShowAllOrders", true);
+            editor.apply();
+        }
+        if (!sharedPref.contains("UseGPSTime")) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("UseGPSTime", true);
             editor.apply();
         }
         return super.onCreateOptionsMenu(menu);
@@ -231,6 +241,11 @@ public class OrdersActivity extends AppCompatActivity implements
 
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean("ShowAllOrders", item.isChecked());
+            editor.apply();
+        } else if (item.getItemId() == R.id.taskUseGPSTime) {
+            item.setChecked(!item.isChecked());
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("UseGPSTime", item.isChecked());
             editor.apply();
         } else if (item.getItemId() == R.id.taskChangeUserBtn) {
             ServiceWorker.StopLocationService(this);

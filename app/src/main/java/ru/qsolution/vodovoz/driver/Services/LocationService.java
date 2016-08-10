@@ -17,6 +17,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
@@ -56,7 +57,15 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
         public void onLocationChanged(Location location) {
             Double latitude = location.getLatitude();
             Double longitude = location.getLongitude();
-            Long time = location.getTime();
+            Long time;
+            SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+            if (sharedPref.getBoolean("UseGPSTime", true)) {
+                Log.i("Location", "Using gps time");
+                time = location.getTime();
+            } else {
+                Log.i("Location", "Using system time");
+                time = Calendar.getInstance().getTimeInMillis();
+            }
             trackPoints.add(new TrackPoint(latitude, longitude, time));
             Log.i("Location", "\nlat: " + latitude.toString() + "; lon: " + longitude.toString() + "; time: " + time.toString());
             if (trackPoints.size() > 10) {
@@ -92,16 +101,20 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return 0;
         }
-        Bundle extras = intent.getExtras();
-        if (extras != null) {
-            RouteListId = extras.getString("routeListId");
-            context = this.getApplicationContext();
-            SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
-            authKey = sharedPref.getString("Authkey", "");
 
-            StartTrackTask task = new StartTrackTask();
-            task.addListener(this);
-            task.execute(authKey, RouteListId);
+        if (intent != null) {
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                RouteListId = extras.getString("routeListId");
+                context = this.getApplicationContext();
+                SharedPreferences sharedPref = context.getSharedPreferences(getString(R.string.auth_file_key), Context.MODE_PRIVATE);
+                authKey = sharedPref.getString("Authkey", "");
+
+                StartTrackTask task = new StartTrackTask();
+                task.addListener(this);
+                task.execute(authKey, RouteListId);
+            }
+            return Service.START_REDELIVER_INTENT;
         }
         return super.onStartCommand(intent, flags, startId);
     }

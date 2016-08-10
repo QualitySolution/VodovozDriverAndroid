@@ -57,21 +57,21 @@ public class Order implements Serializable {
         BottlesReturn = SoapWorker.SafeGetPropertyAsString(soapObject, "BottlesReturn");
 
         Phones = new ArrayList<>();
-        if (soapObject.getProperty("CPPhones") instanceof SoapObject) {
+        if (soapObject != null && soapObject.getProperty("CPPhones") instanceof SoapObject) {
             SoapObject phones = (SoapObject)soapObject.getProperty("CPPhones");
             for (int i = 0; i < phones.getPropertyCount(); i++) {
                 Phones.add(phones.getProperty(i).toString());
             }
         }
         OrderItems = new ArrayList<>();
-        if (soapObject.getProperty("OrderItems") instanceof SoapObject) {
+        if (soapObject != null && soapObject.getProperty("OrderItems") instanceof SoapObject) {
             SoapObject items = (SoapObject)soapObject.getProperty("OrderItems");
             for (int i = 0; i < items.getPropertyCount(); i++) {
                 OrderItems.add(items.getProperty(i).toString());
             }
         }
         OrderEquipment = new ArrayList<>();
-        if (soapObject.getProperty("OrderEquipment") instanceof SoapObject) {
+        if (soapObject != null && soapObject.getProperty("OrderEquipment") instanceof SoapObject) {
             SoapObject equipment = (SoapObject)soapObject.getProperty("OrderEquipment");
             for (int i = 0; i < equipment.getPropertyCount(); i++) {
                 OrderEquipment.add(equipment.getProperty(i).toString());

@@ -9,6 +9,12 @@
         android:checkable="true"
         android:checked="true" />
     <item
+        android:id="@+id/taskUseGPSTime"
+        android:title="@string/menu_use_gps_time"
+        app:showAsAction="never"
+        android:checkable="true"
+        android:checked="true" />
+    <item
         android:id="@+id/taskAcceptRouteListBtn"
         android:title="@string/menu_item_start_route_list"
         app:showAsAction="always" />

@@ -26,6 +26,7 @@
     <string name="menu_item_logout">Смена пользователя</string>
     <string name="menu_item_start_route_list">Принять</string>
     <string name="menu_show_all_orders">Показывать все заказы</string>
+    <string name="menu_use_gps_time">Время GPS</string>
 
     <string name="wait_for_status_change">Изменение статуса. Пожалуйста, подождите.</string>
 

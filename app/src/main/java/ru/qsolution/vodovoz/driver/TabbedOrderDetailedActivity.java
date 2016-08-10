@@ -27,6 +27,7 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity implements IA
     public Boolean needUpdate = false;
 
     private SharedPreferences sharedPref;
+    private MenuItem useGPSTimeMenuItem;
     private AsyncTaskResult<Order> result;
 
     @Override
@@ -115,6 +116,13 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity implements IA
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate your main_menu into the menu
         getMenuInflater().inflate(R.menu.route_lists_menu, menu);
+        useGPSTimeMenuItem = menu.findItem(R.id.taskUseGPSTime);
+        useGPSTimeMenuItem.setChecked(sharedPref.getBoolean("UseGPSTime", true));
+        if (!sharedPref.contains("UseGPSTime")) {
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("UseGPSTime", true);
+            editor.apply();
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -132,6 +140,11 @@ public class TabbedOrderDetailedActivity extends AppCompatActivity implements IA
             i.putExtra("LOGOUT", true);
             startActivity(i);
             finish();
+        } else if (item.getItemId() == R.id.taskUseGPSTime) {
+            item.setChecked(!item.isChecked());
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean("UseGPSTime", item.isChecked());
+            editor.apply();
         } else if (item.getItemId() == R.id.taskExitBtn) {
             Intent i = new Intent(getApplicationContext(), RouteListsActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
