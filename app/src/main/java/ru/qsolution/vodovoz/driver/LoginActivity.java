@@ -1,6 +1,8 @@
 package ru.qsolution.vodovoz.driver;
 
 import android.app.DownloadManager;
+import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +11,8 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +33,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import ru.qsolution.vodovoz.driver.AsyncTasks.*;
+import ru.qsolution.vodovoz.driver.Services.DriverNotificationService;
 
 /**
  * Created by Andrei Vinogradov on 07.06.16.
@@ -40,6 +45,7 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
     private EditText passwordInput;
     private Button loginButton;
     private SharedPreferences sharedPref;
+    private ProgressDialog pDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +64,10 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
         //Checking if needed to close app
         if (extras != null) {
             if (extras.getBoolean("EXIT", false)) {
+                NotificationManager notificationManager =
+                        (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(DriverNotificationService.ONGOING_NOTIFICATION_ID);
+                RouteListsActivity.alarmMgr.cancel(RouteListsActivity.alarmIntent);
                 finish();
                 return;
             }
@@ -71,6 +81,8 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
         CheckAppVersionTask checkAppVersionTask = new CheckAppVersionTask();
         checkAppVersionTask.addListener(this);
         checkAppVersionTask.execute(BuildConfig.VERSION_CODE);
+        pDialog = ProgressDialog.show(this, "Загрузка...", "Пожалуйста, подождите.", true, false);
+
 
         //Authorization logic
         loginButton.setEnabled(false);
@@ -153,6 +165,7 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
                             startActivity(i);
                         }
                     });
+            pDialog.dismiss();
             AlertDialog alert = builder.create();
             alert.show();
         } else {
@@ -178,6 +191,7 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
         @Override
         public void AsyncTaskCompleted(AsyncTaskResult<String> result) {
             try {
+                pDialog.dismiss();
                 //If authorization was unsuccessful
                 if (result.getException() == null && result.getResult() == null) {
                     Toast toast = Toast.makeText(context, R.string.authorization_failed, Toast.LENGTH_LONG);

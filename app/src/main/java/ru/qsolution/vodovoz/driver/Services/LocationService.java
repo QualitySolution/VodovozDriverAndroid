@@ -1,6 +1,7 @@
 package ru.qsolution.vodovoz.driver.Services;
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -30,11 +31,15 @@ import ru.qsolution.vodovoz.driver.R;
 public class LocationService extends Service implements IAsyncTaskListener<AsyncTaskResult<Integer>> {
     public static String RouteListId;
 
-    private Context context;
-    private LocationManager locationManager;
-    private ArrayList<TrackPoint> trackPoints = new ArrayList<>();
-    private AsyncTaskResult<Integer> trackIdResult;
-    private String authKey;
+    private static Context context;
+    private static LocationManager locationManager;
+    private static ArrayList<TrackPoint> trackPoints = new ArrayList<>();
+    private static AsyncTaskResult<Integer> trackIdResult;
+    private static String authKey;
+
+    public static Boolean GpsEnabled () {
+        return locationManager != null && locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
 
     private final LocationListener locationListener = new LocationListener() {
         class AsyncTaskListener implements IAsyncTaskListener<AsyncTaskResult<Boolean>> {
@@ -140,6 +145,10 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
 
     @Override
     public void onDestroy() {
+        NotificationManager notificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(DriverNotificationService.ONGOING_NOTIFICATION_ID);
+
         locationManager.removeUpdates(locationListener);
         RouteListId = null;
         if (trackPoints.size() > 0) {

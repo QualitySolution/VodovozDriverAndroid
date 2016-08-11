@@ -1,9 +1,12 @@
 package ru.qsolution.vodovoz.driver;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.os.SystemClock;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,12 +22,14 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import ru.qsolution.vodovoz.driver.ArrayAdapters.RouteListAdapter;
 import ru.qsolution.vodovoz.driver.AsyncTasks.AsyncTaskResult;
 import ru.qsolution.vodovoz.driver.AsyncTasks.GetRouteListsTask;
 import ru.qsolution.vodovoz.driver.AsyncTasks.IAsyncTaskListener;
 import ru.qsolution.vodovoz.driver.DTO.RouteList;
+import ru.qsolution.vodovoz.driver.Services.DriverNotificationService;
 import ru.qsolution.vodovoz.driver.Workers.ServiceWorker;
 
 public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<ArrayList<RouteList>>>, SwipeRefreshLayout.OnRefreshListener {
@@ -35,8 +40,10 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
     private ListView drawerList;
     private Context context;
     private SwipeRefreshLayout swipeRefreshLayout;
-    private MenuItem useGPSTimeMenuItem;
     private DrawerLayout drawerLayout;
+
+    public static AlarmManager alarmMgr;
+    public static PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +88,14 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
 
         //Retrieving route lists
         refreshRouteLists();
+
+        //
+        if (alarmIntent == null) {
+            alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(context, DriverNotificationService.class);
+            alarmIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+            alarmMgr.setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000, 60000, alarmIntent);
+        }
     }
 
     @Override
@@ -134,7 +149,7 @@ public class RouteListsActivity extends AppCompatActivity implements IAsyncTaskL
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.route_lists_menu, menu);
-        useGPSTimeMenuItem = menu.findItem(R.id.taskUseGPSTime);
+        MenuItem useGPSTimeMenuItem = menu.findItem(R.id.taskUseGPSTime);
         useGPSTimeMenuItem.setChecked(sharedPref.getBoolean("UseGPSTime", true));
         if (!sharedPref.contains("UseGPSTime")) {
             SharedPreferences.Editor editor = sharedPref.edit();
