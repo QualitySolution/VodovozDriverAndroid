@@ -181,7 +181,9 @@ public class OrdersActivity extends AppCompatActivity implements
                     }
                 });
         Dialog dlg = builder.create();
-        dlg.show();
+        if (!isFinishing()) {
+            dlg.show();
+        }
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
