@@ -175,6 +175,8 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
                 CheckAuthTask task = new CheckAuthTask();
                 task.addListener(listener);
                 task.execute(sharedPref.getString("Authkey", ""));
+            } else {
+                pDialog.dismiss();
             }
         }
     }
