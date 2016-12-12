@@ -22,7 +22,6 @@ public class Order implements Serializable {
 
     public final String Id;
     public final String Title;
-    public final String Region;                   //FIXME: Not used
     public final String CityDistrict;             //FIXME: Not used
     public final String StreetDistrict;           //FIXME: Not used
     public final String DeliveryPointComment;
@@ -43,7 +42,6 @@ public class Order implements Serializable {
     public Order (SoapObject soapObject) {
         Id = SoapWorker.SafeGetPropertyAsString(soapObject, "Id");
         Title = SoapWorker.SafeGetPropertyAsString(soapObject, "Title");
-        Region = SoapWorker.SafeGetPropertyAsString(soapObject, "Region");
         CityDistrict = SoapWorker.SafeGetPropertyAsString(soapObject, "CityDistrict");
         StreetDistrict = SoapWorker.SafeGetPropertyAsString(soapObject, "StreetDistrict");
         DeliveryPointComment = SoapWorker.SafeGetPropertyAsString(soapObject, "DeliveryPointComment");
