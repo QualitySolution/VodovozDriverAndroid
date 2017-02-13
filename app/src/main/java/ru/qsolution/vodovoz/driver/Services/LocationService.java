@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -35,6 +36,8 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
     private static LocationManager locationManager;
     private static ArrayList<TrackPoint> trackPoints = new ArrayList<>();
     private static AsyncTaskResult<Integer> trackIdResult;
+    private static SendCoordinatesTask sendTask;
+    private static ArrayList<TrackPoint> sendingPoints;
     private static String authKey;
 
     public static Boolean GpsEnabled () {
@@ -47,7 +50,8 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
             public void AsyncTaskCompleted(AsyncTaskResult<Boolean> result) {
                 try {
                     if (result.getException() == null && result.getResult()) {
-                        trackPoints = new ArrayList<>();
+                        Log.i("Location", "Send " + sendingPoints.size() +" coordinates completed");
+                        trackPoints.removeAll(sendingPoints);
                     } else if (result.getException() != null) {
                         throw result.getException();
                     }
@@ -72,12 +76,14 @@ public class LocationService extends Service implements IAsyncTaskListener<Async
                 time = Calendar.getInstance().getTimeInMillis();
             }
             trackPoints.add(new TrackPoint(latitude, longitude, time));
-            Log.i("Location", "\nlat: " + latitude.toString() + "; lon: " + longitude.toString() + "; time: " + time.toString());
-            if (trackPoints.size() > 10) {
+            Log.i("Location", "\nlat: " + latitude.toString() + "; lon: " + longitude.toString() + "; time: " + time.toString() + "; " + trackPoints.size());
+            if (trackPoints.size() > 10 && (sendTask == null || sendTask.getStatus() == AsyncTask.Status.FINISHED)) {
+                Log.i("Location", "Sending " + trackPoints.size() + " points started");
+                sendingPoints = new ArrayList<>(trackPoints);
                 AsyncTaskListener listener = new AsyncTaskListener();
-                SendCoordinatesTask sendTask = new SendCoordinatesTask();
+                sendTask = new SendCoordinatesTask();
                 sendTask.addListener(listener);
-                sendTask.execute(authKey, trackIdResult.getResult(), trackPoints);
+                sendTask.execute(authKey, trackIdResult.getResult(), sendingPoints);
             }
         }
 
