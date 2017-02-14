@@ -238,6 +238,7 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
         @Override
         public void AsyncTaskCompleted(AsyncTaskResult<Boolean> result) {
             try {
+                pDialog.dismiss();
                 if (result.getException() == null && result.getResult()) {
                     Intent i = new Intent(context, RouteListsActivity.class);
                     startActivity(i);
