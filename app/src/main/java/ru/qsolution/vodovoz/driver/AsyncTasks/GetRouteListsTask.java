@@ -69,12 +69,14 @@ public class GetRouteListsTask extends AsyncTask<String, Void, AsyncTaskResult<A
             SoapObject routeLists = (SoapObject) routeListsObj;
 
             routeListsArray = new ArrayList<>();
-            for (int i = 0; i < routeLists.getPropertyCount(); i++) {
-                Object property = routeLists.getProperty(i);
-                if (property instanceof SoapObject) {
-                    SoapObject soapObject = (SoapObject) property;
-                    RouteList routeList = new RouteList(soapObject);
-                    routeListsArray.add(routeList);
+            if(routeLists != null) {
+                for (int i = 0; i < routeLists.getPropertyCount(); i++) {
+                    Object property = routeLists.getProperty(i);
+                    if (property instanceof SoapObject) {
+                        SoapObject soapObject = (SoapObject) property;
+                        RouteList routeList = new RouteList(soapObject);
+                        routeListsArray.add(routeList);
+                    }
                 }
             }
             result = new AsyncTaskResult<>(routeListsArray);
