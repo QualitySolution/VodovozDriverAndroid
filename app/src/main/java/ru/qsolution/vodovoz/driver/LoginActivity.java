@@ -67,7 +67,8 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
                 NotificationManager notificationManager =
                         (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
                 notificationManager.cancel(DriverNotificationService.ONGOING_NOTIFICATION_ID);
-                RouteListsActivity.alarmMgr.cancel(RouteListsActivity.alarmIntent);
+                if(RouteListsActivity.alarmMgr != null)
+                    RouteListsActivity.alarmMgr.cancel(RouteListsActivity.alarmIntent);
                 finish();
                 return;
             }
