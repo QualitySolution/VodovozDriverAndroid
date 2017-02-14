@@ -45,6 +45,10 @@ public class ChangeOrderStatusTask extends AsyncTask<String, Void, AsyncTaskResu
     @Override
     protected AsyncTaskResult<Boolean> doInBackground(String... args) {
         AsyncTaskResult<Boolean> result;
+
+        if(args[1] == "")
+            return new AsyncTaskResult<> (false);
+
         String METHOD_NAME = NetworkWorker.METHOD_CHANGE_ORDER_STATUS;
 
         HttpTransportSE httpTransport = new HttpTransportSE(NetworkWorker.ANDROID_SERVICE_URL);
