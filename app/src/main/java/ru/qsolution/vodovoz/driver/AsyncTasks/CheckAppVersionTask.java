@@ -37,7 +37,6 @@ public class CheckAppVersionTask extends AsyncTask<Void, Void, AsyncTaskResult<C
 
         SoapObject request = new SoapObject(NetworkWorker.NAMESPACE, METHOD_NAME);
         request.addProperty(NetworkWorker.FIELD_VERSION_CODE, BuildConfig.VERSION_CODE);
-        request.addProperty(NetworkWorker.FIELD_APP_VERSION, BuildConfig.VERSION_NAME);
 
         SoapSerializationEnvelope envelope = NetworkWorker.CreateEnvelope(request);
 
