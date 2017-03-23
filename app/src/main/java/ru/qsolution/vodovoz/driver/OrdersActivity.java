@@ -165,8 +165,8 @@ public class OrdersActivity extends AppCompatActivity implements
     private void runCloseRouteListDlg() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Завершить маршрутный лист?")
-                .setMessage("В данном маршрутном листе не осталось невыполненных заказов. Завершить его? " +
-                        "После завершения данный маршрутный лист уже нельзя будет открыть.")
+                .setMessage("В маршрутном листе не осталось невыполненных заказов. Завершить его? " +
+                        "После завершения маршрутный лист уже нельзя будет открыть. Так же будет завершена запись трека.")
                 .setPositiveButton("Да", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         FinishRouteListTask task = new FinishRouteListTask();
@@ -426,6 +426,7 @@ public class OrdersActivity extends AppCompatActivity implements
         public void AsyncTaskCompleted(AsyncTaskResult<Boolean> result) {
             try {
                 if (result.getException() == null && result.getResult()) {
+                    ServiceWorker.StopLocationService(context);
                     finish();
                 }
                 //If not succeeded
