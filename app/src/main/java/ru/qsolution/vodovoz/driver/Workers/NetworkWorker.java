@@ -16,7 +16,7 @@ public class NetworkWorker {
     public static final String CHAT_SERVICE_URL = "http://vod-srv.qsolution.ru:9000/ChatService";
 
     public static final String METHOD_CHANGE_ORDER_STATUS = "ChangeOrderStatus";
-    public static final String METHOD_CHECK_APP_VERSION = "CheckAppCodeVersion";
+    public static final String METHOD_CHECK_APP_VERSION = "CheckApplicationVersion";
     public static final String METHOD_CHECK_AUTH = "CheckAuth";
     public static final String METHOD_GET_ORDER_DETAILED = "GetOrderDetailed";
     public static final String METHOD_GET_ORDERS = "GetRouteListOrders";
@@ -34,6 +34,7 @@ public class NetworkWorker {
     public static final String FIELD_STATUS = "status";
     public static final String FIELD_BOTTLES_RETURNED = "bottlesReturned";
     public static final String FIELD_VERSION_CODE = "versionCode";
+    public static final String FIELD_APP_VERSION = "appVersion";
     public static final String FIELD_ROUTE_LIST_ID = "routeListId";
     public static final String FIELD_LOGIN = "login";
     public static final String FIELD_PASSWORD = "password";

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import ru.qsolution.vodovoz.driver.AsyncTasks.*;
+import ru.qsolution.vodovoz.driver.DTO.CheckVersionResult;
 import ru.qsolution.vodovoz.driver.Services.DriverNotificationService;
 
 /**
@@ -40,7 +41,7 @@ import ru.qsolution.vodovoz.driver.Services.DriverNotificationService;
  * (c) Quality Solution Ltd.
  */
 
-public class LoginActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<Boolean>> {
+public class LoginActivity extends AppCompatActivity implements IAsyncTaskListener<AsyncTaskResult<CheckVersionResult>> {
     private EditText usernameInput;
     private EditText passwordInput;
     private Button loginButton;
@@ -81,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
         //Checking app API version
         CheckAppVersionTask checkAppVersionTask = new CheckAppVersionTask();
         checkAppVersionTask.addListener(this);
-        checkAppVersionTask.execute(BuildConfig.VERSION_CODE);
+        checkAppVersionTask.execute();
         pDialog = ProgressDialog.show(this, "Загрузка...", "Пожалуйста, подождите.", true, false);
 
 
@@ -145,14 +146,31 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
     }
 
     @Override
-    public void AsyncTaskCompleted(AsyncTaskResult<Boolean> result) {
-        if (result.getException() == null && !result.getResult()) {
+    public void AsyncTaskCompleted(AsyncTaskResult<CheckVersionResult> result) {
+
+        if(result.getException() != null)
+            return;
+
+        final CheckVersionResult versionResult = result.getResult();
+
+        if (versionResult.Result != CheckVersionResult.ResultType.Ok) {
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("Требуется обновление")
+            if(versionResult.Result == CheckVersionResult.ResultType.CanUpdate) {
+                builder.setTitle("Есть обновление")
+                    .setMessage( "Используется устаревшая версия программы. " +
+                        String.format("Ваша версия: %1s Доступна для скачивания: %2s "
+                                , BuildConfig.VERSION_NAME, versionResult.NewVersion))
+                        .setCancelable(true);
+            }
+            else {
+                builder.setTitle("Требуется обновление")
                     .setMessage("Используется устаревшая версия программы. " +
-                            "Для продолжения требуется скачать обновленное приложение.")
-                    .setCancelable(false)
-                    .setNegativeButton("Выход", new DialogInterface.OnClickListener() {
+                                    String.format("Ваша версия: %1s Необходимо скачать: %2s "
+                                            , BuildConfig.VERSION_NAME, versionResult.NewVersion) +
+                        "Для продолжения работы обновление обязательно.")
+                    .setCancelable(false);
+            }
+            builder.setNegativeButton("Выход", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             LoginActivity.this.finish();
                         }
@@ -160,7 +178,7 @@ public class LoginActivity extends AppCompatActivity implements IAsyncTaskListen
                     .setPositiveButton("Скачать", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             LoginActivity.this.finish();
-                            String url = "http://files.qsolution.ru/Vodovoz/VodovozDrivers.apk";
+                            String url = versionResult.DownloadUrl;
                             Intent i = new Intent(Intent.ACTION_VIEW);
                             i.setData(Uri.parse(url));
                             startActivity(i);
