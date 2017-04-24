@@ -15,10 +15,10 @@ public class ShortOrder implements Serializable {
     public final String Address;
 
     public ShortOrder (SoapObject soapObject) {
-        Id = soapObject.getProperty("Id").toString();
-        DeliverySchedule = soapObject.getPropertyAsString("DeliverySchedule");
-        OrderStatus = soapObject.getPropertyAsString("OrderStatus");
-        Counterparty = soapObject.getPropertyAsString("Counterparty");
-        Address = soapObject.getPropertyAsString("Address");
+        Id = soapObject.getPrimitiveProperty("Id").toString();
+        DeliverySchedule = soapObject.getPrimitivePropertyAsString("DeliverySchedule");
+        OrderStatus = soapObject.getPrimitivePropertyAsString("OrderStatus");
+        Counterparty = soapObject.getPrimitivePropertyAsString("Counterparty");
+        Address = soapObject.getPrimitivePropertyAsString("Address");
     }
 }
